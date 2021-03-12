@@ -11,7 +11,9 @@
 #define IDC_STATIC_PW                   1006
 #define IDC_STATIC_ID2                  1006
 #define IDC_EDIT_SIGNUP_ID              1007
+#define IDC_STATIC_IP                   1007
 #define IDC_EDIT_SIGNUP_PW2             1008
+#define IDC_STATIC_PORT                 1008
 #define IDC_EDIT_SIGNUP_PW              1009
 #define IDC_STATIC_ID3                  1009
 #define IDC_STATIC_SIGNUP_PW2           1009
@@ -22,7 +24,10 @@
 #define IDC_STATIC_ID4                  1013
 #define IDC_STATIC_SIGNUP_NICKNAME      1013
 #define ID_SIGNUP_OK_BTN                1014
+#define IDC_EDIT_IP                     1014
 #define IDC_STATIC_SIGNUP_PW            1015
+#define IDC_EDIT_ID3                    1015
+#define IDC_EDIT_PORT                   1015
 #define IDC_FRIEND_BTN                  1017
 #define IDC_ADDFRIEND_BTN               1018
 #define IDC_CHAT_BTN2                   1019
