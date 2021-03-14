@@ -26,7 +26,6 @@
 #define ID_SIGNUP_OK_BTN                1014
 #define IDC_EDIT_IP                     1014
 #define IDC_STATIC_SIGNUP_PW            1015
-#define IDC_EDIT_ID3                    1015
 #define IDC_EDIT_PORT                   1015
 #define IDC_FRIEND_BTN                  1017
 #define IDC_ADDFRIEND_BTN               1018

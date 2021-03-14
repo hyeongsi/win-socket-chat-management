@@ -1,11 +1,5 @@
-﻿#include <Windows.h>
+﻿#include "client-main.h"
 #include "resource.h"
-
-BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK SignUpDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
-HINSTANCE g_hInst;
-bool isLogin;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -32,6 +26,28 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		switch (LOWORD(wParam))
 		{
 		case ID_LOGIN_BTN:
+			char ipStr[ipEditboxCharSize], portStr[ipEditboxCharSize];
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_IP), ipStr, ipEditboxCharSize);
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), portStr, ipEditboxCharSize);
+
+			switch (LoginCheck())
+			{
+			case NotFoundId:
+				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), "");
+				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
+				return false;
+			case WrongPassword:
+				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), "");
+				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
+				return false;
+			}
+
+			if (!ConnectServer(ipStr, portStr))
+			{
+				MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
+				return false;
+			}
+
 			isLogin = true;
 			EndDialog(hDlg, wParam);
 			break;
@@ -39,62 +55,6 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_SIGNUP), hDlg, SignUpDlgProc);
 			break;
 		}
-		return FALSE;
-
-		break;
-	case WM_CLOSE:
-		EndDialog(hDlg, wParam);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CALLBACK SignUpDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
-{
-	switch (iMessage)
-	{
-	case WM_INITDIALOG:
-		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
-		break;
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-			/*case IDOK:
-			case IDCANCEL:
-				EndDialog(hDlgMain, 0);
-				return TRUE;*/
-		}
-
-		break;
-		return FALSE;
-
-		break;
-	case WM_CLOSE:
-		EndDialog(hDlg, wParam);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
-{
-	switch (iMessage)
-	{
-	case WM_INITDIALOG:
-		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
-		break;
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-			/*case IDOK:
-			case IDCANCEL:
-				EndDialog(hDlgMain, 0);
-				return TRUE;*/
-		}
-
-		break;
-		return FALSE;
-
 		break;
 	case WM_CLOSE:
 		EndDialog(hDlg, wParam);

@@ -1,4 +1,2 @@
-﻿  client-main.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\client-main.cpp(66,3): warning C4060: switch문에 'case' 또는 'default' 레이블이 없습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\client-main.cpp(93,3): warning C4060: switch문에 'case' 또는 'default' 레이블이 없습니다.
+﻿  Login.cpp
   win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

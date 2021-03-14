@@ -139,10 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="client-main.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Login.cpp" />
+    <ClCompile Include="SignUp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chat.h" />
+    <ClInclude Include="client-main.h" />
+    <ClInclude Include="Client.h" />
+    <ClInclude Include="Login.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SignUp.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="win socket chat management.rc" />

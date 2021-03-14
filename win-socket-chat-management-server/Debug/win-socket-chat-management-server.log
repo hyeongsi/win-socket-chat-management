@@ -1,3 +1,3 @@
 ﻿  server-main.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(31,3): warning C4060: switch문에 'case' 또는 'default' 레이블이 없습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(43,53): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe
