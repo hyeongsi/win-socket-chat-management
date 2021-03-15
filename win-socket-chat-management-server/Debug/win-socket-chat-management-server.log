@@ -1,3 +1,5 @@
 ﻿  server-main.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(43,53): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(33,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(68,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(70,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  win-socket-chat-management-server.vcxproj -> C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe

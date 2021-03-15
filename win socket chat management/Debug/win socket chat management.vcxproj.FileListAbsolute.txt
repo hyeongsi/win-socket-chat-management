@@ -1,2 +1,4 @@
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.pdb
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win socket chat management.pdb
