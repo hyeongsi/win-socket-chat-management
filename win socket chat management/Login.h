@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include "Client.h"
+#include "resource.h"
 
 enum LoginFailed
 {

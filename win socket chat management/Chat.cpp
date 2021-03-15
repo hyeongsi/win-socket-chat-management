@@ -1,5 +1,4 @@
 ﻿#include "Chat.h"
-#include "resource.h"
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -11,10 +10,9 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-			/*case IDOK:
-			case IDCANCEL:
-				EndDialog(hDlgMain, 0);
-				return TRUE;*/
+		case IDC_SENDTEST_BTN:
+			Client::GetInstance()->SendMessageToServer("테스트입니다.");
+			break;
 		}
 
 		break;

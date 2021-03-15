@@ -8,6 +8,9 @@ private:
 	static Client* instance;
 	SOCKET clientSocket = NULL;
 
+	WSADATA wsaData;
+	SOCKADDR_IN serverAddress = {};
+
 	Client();
 public:
 	static Client* GetInstance();
@@ -15,5 +18,6 @@ public:
 
 	bool ConnectInit(std::string ip, int port);
 	void CloseSocket();
-};
 
+	void SendMessageToServer(std::string msg);
+};

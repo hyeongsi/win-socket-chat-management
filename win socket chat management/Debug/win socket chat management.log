@@ -1,3 +1,6 @@
 ﻿  Client.cpp
-C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Client.cpp(38,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Client.cpp(47,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Client.cpp(76,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Client.cpp(76,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Client.cpp(77,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
   win socket chat management.vcxproj -> C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

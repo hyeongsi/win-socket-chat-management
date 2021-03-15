@@ -1,7 +1,4 @@
 #include "Login.h"
-#include "resource.h"
-
-#include "Client.h"
 
 using namespace std;
 

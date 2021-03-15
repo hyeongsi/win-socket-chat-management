@@ -34,6 +34,7 @@
 #define IDC_STATIC_MYNAME_IS            1022
 #define IDC_LIST_FRIENDS                1023
 #define IDC_STATIC_GROUP_MENU           1024
+#define IDC_SENDTEST_BTN                1026
 
 // Next default values for new objects
 // 

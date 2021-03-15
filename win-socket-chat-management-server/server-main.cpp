@@ -25,7 +25,12 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		g_hDlg = hDlg;
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
 
-		InitServer(hDlg);
+		if (0 != WSAStartup(MAKEWORD(2, 2), &wsaData))
+		{
+			MessageBox(g_hDlg, "WSAStartup Error", "error", NULL);
+			return false;
+		}
+
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MY_IP), GetMyIP().c_str());
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MY_PORT), "4567");
 		break;
