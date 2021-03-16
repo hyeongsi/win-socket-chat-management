@@ -24,13 +24,16 @@
     <ClInclude Include="SignUp.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Chat.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Login.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Client.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatLobby.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Chat.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -46,13 +49,16 @@
     <ClCompile Include="SignUp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Chat.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Login.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Client.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatLobby.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Chat.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

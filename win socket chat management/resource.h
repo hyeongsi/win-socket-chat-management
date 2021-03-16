@@ -6,6 +6,7 @@
 #define IDD_DIALOG_SIGNUP               103
 #define IDD_DIALOG_CHAT                 105
 #define IDD_DIALOG_LOGIN                105
+#define IDD_DIALOG_CHATTING             107
 #define ID_LOGIN_BTN                    1001
 #define ID_GOTO_SIGNUP_BTN              1002
 #define IDC_STATIC_ID                   1005
@@ -35,15 +36,22 @@
 #define IDC_STATIC_MYNAME_IS            1022
 #define IDC_LIST_FRIENDS                1023
 #define IDC_STATIC_GROUP_MENU           1024
+#define IDC_LIST_CHAT_LOG               1025
 #define IDC_SENDTEST_BTN                1026
+#define IDC_EDIT_MESSAGEBOX             1026
+#define IDC_SEND_BTN                    1027
+#define IDC_SENDTEST_BTN2               1027
+#define IDC_ROOMTEST_BTN                1027
+#define IDC_EMOTICON_BTN                1028
+#define IDC_FILE_BTN                    1029
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1025
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

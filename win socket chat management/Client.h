@@ -2,6 +2,8 @@
 #include <WinSock2.h>
 #include <string>
 
+constexpr const int PACKET_SIZE = 1024;
+
 class Client
 {
 private:

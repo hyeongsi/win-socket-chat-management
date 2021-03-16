@@ -14,8 +14,6 @@ enum MessageKind
 	Emoticon,
 };
 
-constexpr const int PACKET_SIZE = 1024;
-
 Client* Client::instance = nullptr;
 Client::Client(){ }
 
@@ -63,6 +61,9 @@ void Client::CloseSocket()
 
 void Client::SendMessageToServer(std::string msg)
 {
+	if (!msg.size())
+		return;
+
 	char cBuffer[PACKET_SIZE];
 	string str;
 

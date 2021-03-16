@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="ChatLobby.cpp" />
     <ClCompile Include="client-main.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Login.cpp" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chat.h" />
+    <ClInclude Include="ChatLobby.h" />
     <ClInclude Include="client-main.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Login.h" />

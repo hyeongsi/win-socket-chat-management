@@ -1,4 +1,7 @@
-﻿#include "Chat.h"
+#include "Chat.h"
+#include <string>
+
+using namespace std;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -10,13 +13,10 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-		case IDC_SENDTEST_BTN:
-			Client::GetInstance()->SendMessageToServer("테스트입니다.");
+		case IDC_SEND_BTN:
+			SendMessageToServer(hDlg);
 			break;
 		}
-
-		break;
-		return FALSE;
 
 		break;
 	case WM_CLOSE:
@@ -24,4 +24,14 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void SendMessageToServer(HWND hwnd)
+{
+	char tempChatMessage[PACKET_SIZE];
+	GetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), tempChatMessage, PACKET_SIZE);
+
+	Client::GetInstance()->SendMessageToServer(tempChatMessage);
+
+	SetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), "");
 }

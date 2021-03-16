@@ -2,7 +2,7 @@
 
 #include "Login.h"
 #include "SignUp.h"
-#include "Chat.h"
+#include "ChatLobby.h"
 #include "resource.h"
 
 #pragma comment(lib, "ws2_32")
