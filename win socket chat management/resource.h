@@ -5,6 +5,7 @@
 #define IDD_DIALOG_MAIN                 101
 #define IDD_DIALOG_SIGNUP               103
 #define IDD_DIALOG_CHAT                 105
+#define IDD_DIALOG_LOGIN                105
 #define ID_LOGIN_BTN                    1001
 #define ID_GOTO_SIGNUP_BTN              1002
 #define IDC_STATIC_ID                   1005

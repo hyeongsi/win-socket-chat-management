@@ -8,7 +8,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	g_hInst = hInstance;
 	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_MAIN), HWND_DESKTOP, MainDlgProc);
 	if(isLogin)
-		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHAT), HWND_DESKTOP, ChatDlgProc);
+		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_LOGIN), HWND_DESKTOP, ChatDlgProc);
 
 	PostQuitMessage(0);
 	return 0;

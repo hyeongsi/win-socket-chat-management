@@ -175,6 +175,33 @@ void MoveScrollbarToEnd(HWND hwnd)
 	SendMessage(hwnd, WM_VSCROLL, SB_BOTTOM, 0);
 }
 
+void AdjustListboxHScroll(HWND hwnd)
+{
+	int nTextLen = 0, nWidth = 0;
+	int nCount = 0, idx = 0;
+	HDC hDc = NULL;
+	HFONT hFont = NULL;
+	SIZE sz = { 0 };
+	char pszText[MAX_PATH] = { 0, };
+
+	nCount = SendMessage(hwnd, LB_GETCOUNT, 0, 0);
+	hFont = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0);
+	hDc = GetDC(hwnd);
+	SelectObject(hDc, (HGDIOBJ)hFont);
+
+	for (idx = 0; idx < nCount; idx++)
+	{
+		nTextLen = SendMessage(hwnd, LB_GETTEXTLEN, idx, 0);
+		memset(pszText, 0, MAX_PATH);
+		SendMessage(hwnd, LB_GETTEXT, idx, (LPARAM)pszText);
+		GetTextExtentPoint32A(hDc, pszText, nTextLen, &sz);
+		nWidth = max(sz.cx, nWidth);
+	}
+
+	ReleaseDC(hwnd, hDc);
+	SendMessage(hwnd, LB_SETHORIZONTALEXTENT, nWidth + 20, 0);
+}
+
 void DebugLogUpdate(int kind, string message)
 {
 	HWND listBox;
@@ -199,4 +226,5 @@ void DebugLogUpdate(int kind, string message)
 
 	SendMessage(listBox, LB_ADDSTRING, 0, (LPARAM)logMessage.c_str());
 	MoveScrollbarToEnd(listBox);
+	AdjustListboxHScroll(listBox);
 }

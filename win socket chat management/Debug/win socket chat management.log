@@ -1,1 +1,8 @@
-﻿  win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
+﻿  Chat.cpp
+  Login.cpp
+  SignUp.cpp
+  client-main.cpp
+  코드를 생성하고 있습니다...
+win socket chat management.rc(82): warning RC2182: duplicate dialog control ID 1009
+  
+  win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
