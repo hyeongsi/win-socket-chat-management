@@ -6,8 +6,8 @@
 #include <time.h>
 #include "resource.h"
 
-#include "jsoncpp\include\json\json.h"
-#pragma comment(lib,"jsoncpp\\lib\\lib_json.lib")
+#include "jsoncppkor\include\json\json.h"
+#pragma comment(lib,"jsoncppkor\\json_vc71_libmtd.lib")
 
 using namespace std;
 
