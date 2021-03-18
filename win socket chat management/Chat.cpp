@@ -26,6 +26,11 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	return FALSE;
 }
 
+void SendLoginSignToServer()
+{
+	
+}
+
 void SendMessageToServer(HWND hwnd)
 {
 	char tempChatMessage[PACKET_SIZE];

@@ -1,5 +1,7 @@
-﻿  Chat.cpp
-  ChatLobby.cpp
-  client-main.cpp
-  코드를 생성하고 있습니다...
+﻿  Client.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(43,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(62,7): warning C4101: 'cBuffer' :참조되지 않은 지역 변수입니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(93,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(93,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(94,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
   win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

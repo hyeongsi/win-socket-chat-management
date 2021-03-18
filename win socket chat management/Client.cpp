@@ -1,7 +1,4 @@
-#include "Client.h"
-
-#include "jsoncppkor\include\json\json.h"
-#pragma comment(lib,"jsoncppkor\\json_vc71_libmtd.lib")
+ï»¿#include "Client.h"
 
 using namespace std;
 
@@ -9,6 +6,7 @@ extern HWND g_hDlg;
 
 enum MessageKind
 {
+	Login,
 	Message,
 	File,
 	Emoticon,
@@ -59,20 +57,38 @@ void Client::CloseSocket()
 	WSACleanup();
 }
 
-void Client::SendMessageToServer(std::string msg)
+void Client::SendLoginSignToServer()
 {
-	if (!msg.size())
-		return;
-
 	char cBuffer[PACKET_SIZE];
 	string str;
 
 	Json::Value root;
 	root["id"] = "test";
-	root["name"] = 123;
+	root["name"] = "ì‹œí˜•";
+	root["kind"] = Login;
+
+	SendPacketToServer(root);
+}
+
+void Client::SendMessageToServer(std::string msg)
+{
+	if (!msg.size())
+		return;
+
+	Json::Value root;
+	root["id"] = "test";
+	root["name"] = "ì‹œí˜•";
 	root["kind"] = Message;
 	root["message"] = msg.c_str();
-	// Ã¤ÆÃ¹æ ¹øÈ£µµ ³ªÁß¿¡ Æ÷ÇÔ½ÃÅ°±â
+	// ì±„íŒ…ë°© ë²ˆí˜¸ë„ ë‚˜ì¤‘ì— í¬í•¨ì‹œí‚¤ê¸°
+
+	SendPacketToServer(root);
+}
+
+void Client::SendPacketToServer(Json::Value root)
+{
+	char cBuffer[PACKET_SIZE];
+	string str;
 
 	Json::StyledWriter writer;
 	str = writer.write(root);
@@ -82,7 +98,7 @@ void Client::SendMessageToServer(std::string msg)
 	if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
 	{
 		MessageBox(g_hDlg, "send error", "error", NULL);
-		// ¼­¹ö ÀçÁ¢¼Ó ÄÚµå ÀÛ¼º
+		// ì„œë²„ ì¬ì ‘ì† ì½”ë“œ ì‘ì„±
 	}
 }
 

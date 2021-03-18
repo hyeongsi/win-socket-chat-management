@@ -22,12 +22,13 @@ enum listboxKind
 typedef struct UserDatas
 {
 	SOCKET socket;
-	int id;
-	UserDatas(SOCKET _socket, int _id) : socket(_socket), id(_id) {};
+	string id;
+	UserDatas(SOCKET _socket, string _id) : socket(_socket), id(_id) {};
 }UserData;
 
 enum MessageKind
 {
+	Login,
 	Message,
 	File,
 	Emoticon,
@@ -99,23 +100,59 @@ unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
 	char cBuffer[PACKET_SIZE] = {};
+	int recvResult;
 
-	while (recv(clientSocket, cBuffer, PACKET_SIZE, 0) != -1)
+	while ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
-		// 임의로 진짜 id 대신 아이디라고 출력하는 중
-		// json 문자열로 받고, 변형하고, 처리한 후에 출력하도록 변경해야 함
-		// 지금은 테스트용으로 cBuffer 그냥 다 출력 하는 중
+		if (!isOpenServer)
+		{
+			closesocket(clientSocket);
+			return 0;
+		}
+
 		Json::Reader reader;
 		Json::Value root;
 		reader.parse(cBuffer, root);
 
-		DebugLogUpdate(logBox, "id : " + root["id"].asString() + " name : " + root["name"].asString()
-		+ " kind : " + root["kind"].asString() + " message : " + root["message"].asString());
-		//DebugLogUpdate(logBox, "아이디, 이름," + string(cBuffer));
+		switch (root["kind"].asInt())
+		{
+		case Login:
+			clientSocketList.emplace_back(UserData(clientSocket, root["id"].asString()));
+			DebugLogUpdate(logBox, root["id"].asString() + ", " + root["name"].asString() + ", 유저 접속");
+			DebugLogUpdate(userBox, "id : " + root["id"].asString() + " name : " + root["name"].asString());
+			break;
+		case Message:
+			DebugLogUpdate(logBox, "id : " + root["id"].asString() + " name : " + root["name"].asString()
+				+ " kind : " + root["kind"].asString() + " message : " + root["message"].asString());
+
+			// send 처리 해야 함
+			break;
+		case File:
+			break;
+		case Emoticon:
+			break;
+		default:
+			return 0;
+		}
 	}
 
-	// userlistbox 에서 해당 유저 삭제 처리
-	// clientSocketList에서 지금 이 클라이언트 삭제 처리
+	int count = 0;
+	for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end();)
+	{
+		if ((*iterator).socket == clientSocket)
+		{
+			DebugLogUpdate(logBox, (*iterator).id + "유저 로그아웃");
+			clientSocketList.erase(iterator);
+			SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_DELETESTRING, count, 0);
+			break;
+		}
+		else
+		{
+			count++;
+			iterator++;
+		}
+	}
+
 	closesocket(clientSocket);
 
 	return 0;
@@ -139,9 +176,6 @@ unsigned WINAPI StartServer(void * arg)
 		if (SOCKET_ERROR != clientSocket)
 		{
 			// 로그인 정보 중 id값 가져와서 리스트에 해당 id값 넣어야함 지금은 임시로 123으로 설정
-			clientSocketList.emplace_back(UserData(clientSocket, 123));
-			DebugLogUpdate(logBox, "test, 123 , 유저 접속");
-			DebugLogUpdate(userBox, "id : test , name : 123");
 			_beginthreadex(NULL, 0, RecvThread, &clientSocket, 0, NULL);
 		}
 	}

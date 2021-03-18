@@ -23,6 +23,6 @@ bool ConnectServer(std::string ip, std::string port)
 		return false;
 	}
 	
-
+	Client::GetInstance()->SendLoginSignToServer();
 	return true;
 }
