@@ -9,8 +9,6 @@
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
-constexpr const int ipEditboxCharSize = 30;
-
 HWND g_hDlg;
 HINSTANCE g_hInst;
 bool isLogin;

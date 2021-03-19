@@ -139,9 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MembershipDB.cpp" />
     <ClCompile Include="server-main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MembershipDB.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="server-main.h" />
   </ItemGroup>

@@ -22,6 +22,7 @@
 #define IDC_EDIT_SIGNUP_NICKNAME        1010
 #define IDC_STATIC_SIGNUP_ID            1011
 #define IDC_EDIT_ID                     1012
+#define IDC_STATIC_SIGNUP_IP            1012
 #define IDC_EDIT_PW                     1013
 #define IDC_STATIC_ID4                  1013
 #define IDC_STATIC_SIGNUP_NICKNAME      1013
@@ -29,8 +30,12 @@
 #define IDC_EDIT_IP                     1014
 #define IDC_STATIC_SIGNUP_PW            1015
 #define IDC_EDIT_PORT                   1015
+#define IDC_EDIT_SIGNUP_IP              1016
 #define IDC_FRIEND_BTN                  1017
+#define IDC_STATIC_SIGNUP_PORT          1017
 #define IDC_ADDFRIEND_BTN               1018
+#define IDC_EDIT_SIGNUP_IP2             1018
+#define IDC_EDIT_SIGNUP_PORT            1018
 #define IDC_CHAT_BTN2                   1019
 #define IDC_STATIC_MYNAME               1021
 #define IDC_STATIC_MYNAME_IS            1022
@@ -40,7 +45,6 @@
 #define IDC_SENDTEST_BTN                1026
 #define IDC_EDIT_MESSAGEBOX             1026
 #define IDC_SEND_BTN                    1027
-#define IDC_SENDTEST_BTN2               1027
 #define IDC_ROOMTEST_BTN                1027
 #define IDC_EMOTICON_BTN                1028
 #define IDC_FILE_BTN                    1029

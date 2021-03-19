@@ -47,6 +47,8 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 				return false;
 			}
 
+			Client::GetInstance()->SendLoginSignToServer();
+
 			isLogin = true;
 			EndDialog(hDlg, wParam);
 			break;

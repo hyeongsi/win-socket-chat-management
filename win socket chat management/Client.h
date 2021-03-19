@@ -5,6 +5,15 @@
 #include "jsoncppkor\include\json\json.h"
 #pragma comment(lib,"jsoncppkor\\json_vc71_libmtd.lib")
 
+enum MessageKind
+{
+	SignUp,
+	Login,
+	Message,
+	File,
+	Emoticon,
+};
+
 constexpr const int PACKET_SIZE = 1024;
 
 class Client
@@ -25,7 +34,8 @@ public:
 	void CloseSocket();
 
 	void SendLoginSignToServer();
-	void SendMessageToServer(std::string msg);
+	bool SendMessageToServer(std::string msg);
 
-	void SendPacketToServer(Json::Value root);
+	bool SendPacketToServer(Json::Value root);
+	Json::Value RecvPacketToServer();
 };

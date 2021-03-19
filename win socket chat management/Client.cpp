@@ -4,14 +4,6 @@ using namespace std;
 
 extern HWND g_hDlg;
 
-enum MessageKind
-{
-	Login,
-	Message,
-	File,
-	Emoticon,
-};
-
 Client* Client::instance = nullptr;
 Client::Client(){ }
 
@@ -70,10 +62,10 @@ void Client::SendLoginSignToServer()
 	SendPacketToServer(root);
 }
 
-void Client::SendMessageToServer(std::string msg)
+bool Client::SendMessageToServer(std::string msg)
 {
 	if (!msg.size())
-		return;
+		return false;
 
 	Json::Value root;
 	root["id"] = "test";
@@ -82,10 +74,10 @@ void Client::SendMessageToServer(std::string msg)
 	root["message"] = msg.c_str();
 	// 채팅방 번호도 나중에 포함시키기
 
-	SendPacketToServer(root);
+	return SendPacketToServer(root);
 }
 
-void Client::SendPacketToServer(Json::Value root)
+bool Client::SendPacketToServer(Json::Value root)
 {
 	char cBuffer[PACKET_SIZE];
 	string str;
@@ -99,7 +91,15 @@ void Client::SendPacketToServer(Json::Value root)
 	{
 		MessageBox(g_hDlg, "send error", "error", NULL);
 		// 서버 재접속 코드 작성
+		return false;
 	}
+
+	return true;
+}
+
+Json::Value Client::RecvPacketToServer()
+{
+	return Json::Value();
 }
 
 

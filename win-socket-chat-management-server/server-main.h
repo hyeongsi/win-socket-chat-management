@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <time.h>
+#include "MembershipDB.h"
 #include "resource.h"
 
 #include "jsoncppkor\include\json\json.h"
@@ -26,8 +27,16 @@ typedef struct UserDatas
 	UserDatas(SOCKET _socket, string _id) : socket(_socket), id(_id) {};
 }UserData;
 
+enum SignUpMessage
+{
+	Success,
+	ExsistsSameId,
+	ExsistsSameName,
+};
+
 enum MessageKind
 {
+	SignUp,
 	Login,
 	Message,
 	File,
@@ -96,6 +105,23 @@ string GetMyIP()
 	return string(ip);
 }
 
+int CheckSignUpData(string id, string pw, string name)
+{
+	if (MembershipDB::GetInstance()->FindIndex(ID, id) == -1)
+	{
+		//send ExsistsSameId
+		return ExsistsSameId;
+	}
+	if (MembershipDB::GetInstance()->FindIndex(NAME, name) == -1)
+	{
+		//send ExsistsSameName
+		return ExsistsSameName;
+	}
+		
+
+	// id, pw, name db 저장 후 send Success
+	return Success;
+}
 unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
@@ -116,6 +142,22 @@ unsigned WINAPI RecvThread(void* arg)
 
 		switch (root["kind"].asInt())
 		{
+		case SignUp:
+
+			switch (CheckSignUpData(root["id"].asString(),
+				root["pw"].asString(), root["name"].asString()))
+			{
+			case Success:
+				break;
+			case ExsistsSameId:
+				break;
+			case ExsistsSameName:
+				break;
+			}
+			
+			// 3개 받고, 회원정보 저장 db 비교 후 없는 계정이면 db에 데이터 추가
+			// "result", "value" 만들어서 send 보냄
+			break;
 		case Login:
 			clientSocketList.emplace_back(UserData(clientSocket, root["id"].asString()));
 			DebugLogUpdate(logBox, root["id"].asString() + ", " + root["name"].asString() + ", 유저 접속");
