@@ -1,5 +1,9 @@
 #pragma once
+#include <list>
+#include <vector>
 #include <string>
+
+using namespace std;
 
 enum MembershipKey
 {
@@ -14,6 +18,8 @@ private:
 	static MembershipDB* instance;
 
 	MembershipDB();
+	vector<string> Split(string input, char delimiter);
+	list<string> GetTextArray(string path);
 public:
 	static MembershipDB* GetInstance();
 	static void ReleaseInstance();

@@ -51,9 +51,6 @@ void Client::CloseSocket()
 
 void Client::SendLoginSignToServer()
 {
-	char cBuffer[PACKET_SIZE];
-	string str;
-
 	Json::Value root;
 	root["id"] = "test";
 	root["name"] = "시형";
@@ -99,7 +96,17 @@ bool Client::SendPacketToServer(Json::Value root)
 
 Json::Value Client::RecvPacketToServer()
 {
-	return Json::Value();
+	char cBuffer[PACKET_SIZE] = {};
+	int recvResult;
+
+	if ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
+		return NULL;
+
+	Json::Reader reader;
+	Json::Value recvValue;
+	reader.parse(cBuffer, recvValue);
+
+	return recvValue;
 }
 
 

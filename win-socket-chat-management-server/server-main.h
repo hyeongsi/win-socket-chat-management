@@ -108,20 +108,22 @@ string GetMyIP()
 int CheckSignUpData(string id, string pw, string name)
 {
 	if (MembershipDB::GetInstance()->FindIndex(ID, id) == -1)
-	{
-		//send ExsistsSameId
 		return ExsistsSameId;
-	}
 	if (MembershipDB::GetInstance()->FindIndex(NAME, name) == -1)
-	{
-		//send ExsistsSameName
 		return ExsistsSameName;
-	}
-		
 
-	// id, pw, name db 저장 후 send Success
 	return Success;
 }
+
+string JsonToString(Json::Value value)
+{
+	string str;
+	Json::StyledWriter writer;
+	str = writer.write(value);
+
+	return str;
+}
+
 unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
@@ -137,35 +139,40 @@ unsigned WINAPI RecvThread(void* arg)
 		}
 
 		Json::Reader reader;
-		Json::Value root;
-		reader.parse(cBuffer, root);
+		Json::Value recvValue, sendValue;
+		reader.parse(cBuffer, recvValue);
+		string jsonString;
 
-		switch (root["kind"].asInt())
+		switch (recvValue["kind"].asInt())
 		{
 		case SignUp:
 
-			switch (CheckSignUpData(root["id"].asString(),
-				root["pw"].asString(), root["name"].asString()))
+			sendValue["value"] = CheckSignUpData(recvValue["id"].asString(),
+				recvValue["pw"].asString(), recvValue["name"].asString());
+
+			if (Success == sendValue["value"].asInt())
 			{
-			case Success:
-				break;
-			case ExsistsSameId:
-				break;
-			case ExsistsSameName:
-				break;
+				// db에 데이터 저장;
+				sendValue["result"] = true;
 			}
-			
-			// 3개 받고, 회원정보 저장 db 비교 후 없는 계정이면 db에 데이터 추가
-			// "result", "value" 만들어서 send 보냄
+			else
+				sendValue["result"] = false;
+
+			jsonString =JsonToString(sendValue);
+			memcpy(cBuffer, jsonString.c_str(), jsonString.size());
+
+			if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
+				return 0;
+
 			break;
 		case Login:
-			clientSocketList.emplace_back(UserData(clientSocket, root["id"].asString()));
-			DebugLogUpdate(logBox, root["id"].asString() + ", " + root["name"].asString() + ", 유저 접속");
-			DebugLogUpdate(userBox, "id : " + root["id"].asString() + " name : " + root["name"].asString());
+			clientSocketList.emplace_back(UserData(clientSocket, recvValue["id"].asString()));
+			DebugLogUpdate(logBox, recvValue["id"].asString() + ", " + recvValue["name"].asString() + ", 유저 접속");
+			DebugLogUpdate(userBox, "id : " + recvValue["id"].asString() + " name : " + recvValue["name"].asString());
 			break;
 		case Message:
-			DebugLogUpdate(logBox, "id : " + root["id"].asString() + " name : " + root["name"].asString()
-				+ " kind : " + root["kind"].asString() + " message : " + root["message"].asString());
+			DebugLogUpdate(logBox, "id : " + recvValue["id"].asString() + " name : " + recvValue["name"].asString()
+				+ " kind : " + recvValue["kind"].asString() + " message : " + recvValue["message"].asString());
 
 			// send 처리 해야 함
 			break;

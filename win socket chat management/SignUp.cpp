@@ -39,7 +39,14 @@ BOOL CALLBACK SignUpDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPar
 				Client::GetInstance()->SendPacketToServer(root);
 				Json::Value resultRoot;
 				resultRoot = Client::GetInstance()->RecvPacketToServer();
-				if (resultRoot["result"].asString() == "true")
+				if (resultRoot == NULL)
+				{
+					MessageBox(hDlg, "서버연결 실패", "fail", 0);
+					Client::GetInstance()->CloseSocket();
+					break;
+				}
+
+				if (resultRoot["result"].asBool())
 				{
 					Client::GetInstance()->CloseSocket();
 					MessageBox(hDlg, "회원가입 성공", "success", 0);
