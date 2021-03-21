@@ -49,11 +49,11 @@ void Client::CloseSocket()
 	WSACleanup();
 }
 
-void Client::SendLoginSignToServer()
+void Client::SendLoginSignToServer(string id, string pw)
 {
 	Json::Value root;
-	root["id"] = "test";
-	root["name"] = "시형";
+	root["id"] = id;
+	root["pw"] = pw;
 	root["kind"] = Login;
 
 	SendPacketToServer(root);

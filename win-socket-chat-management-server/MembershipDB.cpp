@@ -37,7 +37,7 @@ void MembershipDB::ReleaseInstance()
     instance = nullptr;
 }
 
-int MembershipDB::FindIndex(const int kind, const std::string value)
+list<string> MembershipDB::GetColumn()
 {
     list<string> textArray;
     ifstream finput;
@@ -56,11 +56,15 @@ int MembershipDB::FindIndex(const int kind, const std::string value)
     }
     finput.close();
 
+    return textArray;
+}
+
+int MembershipDB::ExistValue(const int kind, const std::string value)
+{
+    list<string> textArray = GetColumn();
+    
     if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
         return -2;  
-
-    int rowNumber;
-    rowNumber = kind;
 
     for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
     {
@@ -71,7 +75,7 @@ int MembershipDB::FindIndex(const int kind, const std::string value)
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
-        if (row[rowNumber] == value)
+        if (row[kind] == value)
             return kind;    // 찾으면 해당 인덱스 리턴
 
         row.clear();
@@ -79,6 +83,31 @@ int MembershipDB::FindIndex(const int kind, const std::string value)
     }
     
     return -1;
+}
+
+int MembershipDB::LoginCheck(const string id, const string pw)
+{
+    list<string> textArray = GetColumn();
+
+    for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
+    {
+        if (loadTextIterator == textArray.begin())
+        {
+            loadTextIterator++;
+            continue;   // 첫줄 제외
+        }
+
+        vector<string> row = Split(*loadTextIterator, ',');
+        if (row[0] == id && row[1] == pw)
+        {
+             return LoginSuccess;
+        }  
+
+        row.clear();
+        loadTextIterator++;
+    }
+
+    return WringIdOrPassword;
 }
 
 bool MembershipDB::WriteMembershipData(const string id, const string pw, const string name)

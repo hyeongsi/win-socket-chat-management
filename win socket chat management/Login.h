@@ -5,10 +5,10 @@
 
 enum LoginFailed
 {
-	Success,
-	NotFoundId,
-	WrongPassword,
+	LoginSuccess,
+	WringIdOrPassword,
+	Cancel,
 };
 
-int LoginCheck();
+int LoginCheck(std::string id, std::string pw);
 bool ConnectServer(std::string ip, std::string port);

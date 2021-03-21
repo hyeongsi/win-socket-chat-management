@@ -25,29 +25,27 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		switch (LOWORD(wParam))
 		{
 		case ID_LOGIN_BTN:
-			char ipStr[ipEditboxCharSize], portStr[ipEditboxCharSize];
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_IP), ipStr, ipEditboxCharSize);
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), portStr, ipEditboxCharSize);
+			char tempStr[ipEditboxCharSize], tempStr2[ipEditboxCharSize];
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_IP), tempStr, ipEditboxCharSize);
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), tempStr2, ipEditboxCharSize);
 
-			switch (LoginCheck())
-			{
-			case NotFoundId:
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), "");
-				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
-				return false;
-			case WrongPassword:
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), "");
-				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
-				return false;
-			}
-
-			if (!ConnectServer(ipStr, portStr))
+			if (!ConnectServer(tempStr, tempStr2))
 			{
 				MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
 				return false;
 			}
 
-			Client::GetInstance()->SendLoginSignToServer();
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), tempStr, ipEditboxCharSize);
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), tempStr2, ipEditboxCharSize);
+			switch (LoginCheck(tempStr, tempStr2))
+			{
+			case WringIdOrPassword:
+				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
+				return false;
+			case Cancel:
+				MessageBox(hDlg, "서버 통신 오류", "로그인 오류", NULL);
+				return false;
+			}
 
 			isLogin = true;
 			EndDialog(hDlg, wParam);

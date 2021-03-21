@@ -2,13 +2,18 @@
 
 using namespace std;
 
-int LoginCheck()
+int LoginCheck(string id, string pw)
 {
-	// id, pw 데이터 베이스와 비교 후 로그인
-	return Success;
+	Client::GetInstance()->SendLoginSignToServer(id, pw);
+
+	Json::Value recvValue = Client::GetInstance()->RecvPacketToServer();
+	if (recvValue == NULL)
+		return Cancel;
+
+	return recvValue["result"].asInt();
 }
 
-bool ConnectServer(std::string ip, std::string port)
+bool ConnectServer(string ip, string port)
 {
 	Client::GetInstance()->CloseSocket();	// 기존 연결 끊고 다시 연결 진행
 	
@@ -16,7 +21,6 @@ bool ConnectServer(std::string ip, std::string port)
 	{
 		if (!(Client::GetInstance()->ConnectInit(ip, stoi(port))))	// 연결 실패 시
 			return false;
-			//return true;
 	}
 	catch (const std::exception&)
 	{

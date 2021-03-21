@@ -107,22 +107,20 @@ string GetMyIP()
 
 int CheckSignUpData(string id, string pw, string name)
 {
-	int findIndexResult = MembershipDB::GetInstance()->FindIndex(ID, id);
-	switch (findIndexResult)
+	switch (MembershipDB::GetInstance()->ExistValue(ID, id))
 	{
 	case ID:
 		return ExsistsSameId;
 	case -2:
-		return findIndexResult;
+		return -2;
 	}
 
-	findIndexResult = MembershipDB::GetInstance()->FindIndex(NAME, name);
-	switch (findIndexResult)
+	switch (MembershipDB::GetInstance()->ExistValue(NAME, name))
 	{
 	case NAME:
 		return ExsistsSameName;
 	case -2:
-		return findIndexResult;
+		return -2;
 	}
 
 	return Success;
@@ -137,11 +135,25 @@ string JsonToString(Json::Value value)
 	return str;
 }
 
+bool SendJsonData(Json::Value value)
+{
+	string jsonString;
+	char cBuffer[PACKET_SIZE] = {};
+	jsonString = JsonToString(value);
+	memcpy(cBuffer, jsonString.c_str(), jsonString.size());
+
+	if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
+		return false;
+	else
+		return true;
+}
+
 unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
 	char cBuffer[PACKET_SIZE] = {};
 	int recvResult;
+	string userId;
 
 	while ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
@@ -154,7 +166,6 @@ unsigned WINAPI RecvThread(void* arg)
 		Json::Reader reader;
 		Json::Value recvValue, sendValue;
 		reader.parse(cBuffer, recvValue);
-		string jsonString;
 
 		switch (recvValue["kind"].asInt())
 		{
@@ -179,20 +190,29 @@ unsigned WINAPI RecvThread(void* arg)
 				sendValue["result"] = false;
 			}
 				
-			jsonString =JsonToString(sendValue);
-			memcpy(cBuffer, jsonString.c_str(), jsonString.size());
-
-			if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
+			if (!SendJsonData(sendValue))
 				return 0;
+
 			break;
 		case Login:
-			clientSocketList.emplace_back(UserData(clientSocket, recvValue["id"].asString()));
-			DebugLogUpdate(logBox, recvValue["id"].asString() + ", " + recvValue["name"].asString() + ", 蜡历 立加");
-			DebugLogUpdate(userBox, "id : " + recvValue["id"].asString() + " name : " + recvValue["name"].asString());
+			sendValue["result"] = MembershipDB::GetInstance()->
+				LoginCheck(recvValue["id"].asString(),
+					recvValue["pw"].asString());
+
+			if (!SendJsonData(sendValue))
+				return 0;
+
+			if (LoginSuccess == sendValue["result"].asInt())
+			{
+				clientSocketList.emplace_back(UserData(clientSocket, recvValue["id"].asString()));
+				userId = recvValue["id"].asString();
+				DebugLogUpdate(userBox, "id : " + recvValue["id"].asString());
+				DebugLogUpdate(logBox, recvValue["id"].asString() + " 蜡历 立加");
+			}
+
 			break;
 		case Message:
-			DebugLogUpdate(logBox, "id : " + recvValue["id"].asString() + " name : " + recvValue["name"].asString()
-				+ " kind : " + recvValue["kind"].asString() + " message : " + recvValue["message"].asString());
+			DebugLogUpdate(logBox, userId + " / message : " + recvValue["message"].asString());
 
 			// send 贸府 秦具 窃
 			break;

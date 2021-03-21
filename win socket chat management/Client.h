@@ -33,7 +33,7 @@ public:
 	bool ConnectInit(std::string ip, int port);
 	void CloseSocket();
 
-	void SendLoginSignToServer();
+	void SendLoginSignToServer(std::string id, std::string pw);
 	bool SendMessageToServer(std::string msg);
 
 	bool SendPacketToServer(Json::Value root);

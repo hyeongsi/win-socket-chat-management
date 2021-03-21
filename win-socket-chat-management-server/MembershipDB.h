@@ -12,6 +12,13 @@ enum MembershipKey
 	NAME,
 };
 
+enum LoginFailed
+{
+	LoginSuccess,
+	WringIdOrPassword,
+	Cancel,
+};
+
 class MembershipDB
 {
 private:
@@ -19,11 +26,15 @@ private:
 
 	MembershipDB();
 	vector<string> Split(string input, char delimiter);
+
+	list<string> GetColumn();
 public:
 	static MembershipDB* GetInstance();
 	static void ReleaseInstance();
 
-	int FindIndex(const int kind, const std::string value);
+	int ExistValue(const int kind, const std::string value);
+
+	int LoginCheck(const string id, const string pw);
 	bool WriteMembershipData(const string id, const string pw, const string name);
 };
 
