@@ -4,7 +4,7 @@
 
 enum SignUpMessage
 {
-	ExsistsSameId,
+	ExsistsSameId = 1,
 	ExsistsSameName,
 };
 

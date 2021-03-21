@@ -17,8 +17,8 @@ BOOL CALLBACK SignUpDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPar
 		switch (LOWORD(wParam))
 		{
 			case ID_SIGNUP_OK_BTN:
-				if (!ConnectServer(GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_IP)), 
-					GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_PORT))))
+				if (!(ConnectServer(GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_IP)),
+					GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_PORT)))))
 				{
 					MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
 					break;
@@ -50,6 +50,7 @@ BOOL CALLBACK SignUpDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPar
 				{
 					Client::GetInstance()->CloseSocket();
 					MessageBox(hDlg, "회원가입 성공", "success", 0);
+					EndDialog(hDlg, wParam);
 				}
 				else
 				{

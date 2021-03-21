@@ -3,11 +3,11 @@
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(61,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(96,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(98,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(121,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(121,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(122,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(141,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(141,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(143,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(134,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(134,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(135,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(154,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(154,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(156,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
   코드를 생성하고 있습니다...
   win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe

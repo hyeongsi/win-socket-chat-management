@@ -100,13 +100,15 @@ Json::Value Client::RecvPacketToServer()
 	int recvResult;
 
 	if ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
-		return NULL;
+	{
+		Json::Reader reader;
+		Json::Value recvValue;
+		reader.parse(cBuffer, recvValue);
 
-	Json::Reader reader;
-	Json::Value recvValue;
-	reader.parse(cBuffer, recvValue);
+		return recvValue;
+	}
 
-	return recvValue;
+	return NULL;
 }
 
 

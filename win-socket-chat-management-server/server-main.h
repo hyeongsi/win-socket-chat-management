@@ -107,10 +107,23 @@ string GetMyIP()
 
 int CheckSignUpData(string id, string pw, string name)
 {
-	if (MembershipDB::GetInstance()->FindIndex(ID, id) == -1)
+	int findIndexResult = MembershipDB::GetInstance()->FindIndex(ID, id);
+	switch (findIndexResult)
+	{
+	case ID:
 		return ExsistsSameId;
-	if (MembershipDB::GetInstance()->FindIndex(NAME, name) == -1)
+	case -2:
+		return findIndexResult;
+	}
+
+	findIndexResult = MembershipDB::GetInstance()->FindIndex(NAME, name);
+	switch (findIndexResult)
+	{
+	case NAME:
 		return ExsistsSameName;
+	case -2:
+		return findIndexResult;
+	}
 
 	return Success;
 }
@@ -146,24 +159,31 @@ unsigned WINAPI RecvThread(void* arg)
 		switch (recvValue["kind"].asInt())
 		{
 		case SignUp:
-
+			DebugLogUpdate(logBox, recvValue["value"].asString() + ", " + recvValue["id"].asString() + ", "+
+				recvValue["pw"].asString() + ", "+ recvValue["name"].asString() + " 회원가입 요청");
+			
 			sendValue["value"] = CheckSignUpData(recvValue["id"].asString(),
 				recvValue["pw"].asString(), recvValue["name"].asString());
 
 			if (Success == sendValue["value"].asInt())
 			{
+				MembershipDB::GetInstance()->WriteMembershipData(
+					recvValue["id"].asString(), recvValue["pw"].asString(), recvValue["name"].asString());
+				DebugLogUpdate(logBox, "회원가입 성공");
 				// db에 데이터 저장;
 				sendValue["result"] = true;
 			}
 			else
+			{
+				DebugLogUpdate(logBox, "회원가입 실패");
 				sendValue["result"] = false;
-
+			}
+				
 			jsonString =JsonToString(sendValue);
 			memcpy(cBuffer, jsonString.c_str(), jsonString.size());
 
 			if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
 				return 0;
-
 			break;
 		case Login:
 			clientSocketList.emplace_back(UserData(clientSocket, recvValue["id"].asString()));

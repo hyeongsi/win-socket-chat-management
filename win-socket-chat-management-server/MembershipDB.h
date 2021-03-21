@@ -19,11 +19,11 @@ private:
 
 	MembershipDB();
 	vector<string> Split(string input, char delimiter);
-	list<string> GetTextArray(string path);
 public:
 	static MembershipDB* GetInstance();
 	static void ReleaseInstance();
 
 	int FindIndex(const int kind, const std::string value);
+	bool WriteMembershipData(const string id, const string pw, const string name);
 };
 
