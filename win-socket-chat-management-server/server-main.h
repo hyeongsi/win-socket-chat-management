@@ -154,10 +154,9 @@ unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
 	char cBuffer[PACKET_SIZE] = {};
-	int recvResult;
 	string userId, userName;
 
-	while ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
+	while ((recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
 		if (!isOpenServer)
 		{
@@ -223,7 +222,11 @@ unsigned WINAPI RecvThread(void* arg)
 			DebugLogUpdate(logBox, userId + " / " + userName +
 				" / message : " + recvValue["message"].asString());
 
-			// send 처리 해야 함
+			sendValue["kind"] = Message;
+			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
+			sendValue["message"] = recvValue["message"].asString();
+			if (!SendJsonData(sendValue))
+				return 0;
 			break;
 		case File:
 			break;

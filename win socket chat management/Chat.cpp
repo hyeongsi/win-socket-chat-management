@@ -5,10 +5,16 @@ using namespace std;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	COPYDATASTRUCT* pcds;
+
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
+		break;
+	case WM_COPYDATA:
+		pcds = (PCOPYDATASTRUCT)lParam;
+		MessageBox(hDlg, (LPCSTR)pcds->lpData, "test", 0);
 		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
