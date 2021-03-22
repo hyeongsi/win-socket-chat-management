@@ -34,6 +34,7 @@ public:
 
 	int ExistValue(const int kind, const std::string value);
 
+	std::string FindName(std::string id);
 	int LoginCheck(const string id, const string pw);
 	bool WriteMembershipData(const string id, const string pw, const string name);
 };

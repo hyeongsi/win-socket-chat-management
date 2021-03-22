@@ -85,6 +85,34 @@ int MembershipDB::ExistValue(const int kind, const std::string value)
     return -1;
 }
 
+std::string MembershipDB::FindName(std::string id)
+{
+    list<string> textArray = GetColumn();
+
+    if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
+        return "";
+
+    for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
+    {
+        if (loadTextIterator == textArray.begin())
+        {
+            loadTextIterator++;
+            continue;   // 위와 같은 문제
+        }
+
+        vector<string> row = Split(*loadTextIterator, ',');
+        if (row[0] == id)
+        {
+            return row[2];
+        } 
+
+        row.clear();
+        loadTextIterator++;
+    }
+
+    return "";
+}
+
 int MembershipDB::LoginCheck(const string id, const string pw)
 {
     list<string> textArray = GetColumn();

@@ -65,8 +65,6 @@ bool Client::SendMessageToServer(std::string msg)
 		return false;
 
 	Json::Value root;
-	root["id"] = "test";
-	root["name"] = "시형";
 	root["kind"] = Message;
 	root["message"] = msg.c_str();
 	// 채팅방 번호도 나중에 포함시키기

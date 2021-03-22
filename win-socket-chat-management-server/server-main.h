@@ -24,7 +24,9 @@ typedef struct UserDatas
 {
 	SOCKET socket;
 	string id;
-	UserDatas(SOCKET _socket, string _id) : socket(_socket), id(_id) {};
+	string name;
+	UserDatas(SOCKET _socket, string _id, string _name) 
+		: socket(_socket), id(_id), name(_name) {};
 }UserData;
 
 enum SignUpMessage
@@ -153,7 +155,7 @@ unsigned WINAPI RecvThread(void* arg)
 	SOCKET clientSocket = *(SOCKET*)arg;
 	char cBuffer[PACKET_SIZE] = {};
 	int recvResult;
-	string userId;
+	string userId, userName;
 
 	while ((recvResult = recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
@@ -204,15 +206,22 @@ unsigned WINAPI RecvThread(void* arg)
 
 			if (LoginSuccess == sendValue["result"].asInt())
 			{
-				clientSocketList.emplace_back(UserData(clientSocket, recvValue["id"].asString()));
 				userId = recvValue["id"].asString();
-				DebugLogUpdate(userBox, "id : " + recvValue["id"].asString());
-				DebugLogUpdate(logBox, recvValue["id"].asString() + " 蜡历 立加");
+				userName = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
+
+				clientSocketList.emplace_back(UserData(
+					clientSocket, 
+					userId,
+					userName));
+				
+				DebugLogUpdate(userBox, "id : " + userId + " name : " + userName);
+				DebugLogUpdate(logBox, userId + ", " + userName + " 蜡历 立加");
 			}
 
 			break;
 		case Message:
-			DebugLogUpdate(logBox, userId + " / message : " + recvValue["message"].asString());
+			DebugLogUpdate(logBox, userId + " / " + userName +
+				" / message : " + recvValue["message"].asString());
 
 			// send 贸府 秦具 窃
 			break;
