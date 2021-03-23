@@ -8,7 +8,9 @@ HWND chatDlgHandle;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	COPYDATASTRUCT* pcds;
+	OPENFILENAME openFileName;
+	static char strFileTitle[MAX_PATH], strFileExtension[10], strFilePath[100];
+	TCHAR curDirectoryPath[256];
 
 	switch (iMessage)
 	{
@@ -16,18 +18,51 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		chatDlgHandle = hDlg;
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
 		break;
-	case WM_COPYDATA:
-		pcds = (PCOPYDATASTRUCT)lParam;
-		MessageBox(hDlg, (LPCSTR)pcds->lpData, "test", 0);
-		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
 		case IDC_SEND_BTN:
 			SendMessageToServer(hDlg);
 			break;
-		}
+		case IDC_FILE_BTN:
+			GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
 
+			ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+			openFileName.lStructSize = sizeof(openFileName);
+			openFileName.hwndOwner = hDlg;
+			openFileName.lpstrTitle = "파일첨부";
+			openFileName.lpstrFileTitle = strFileTitle;
+			openFileName.lpstrFile = strFilePath;
+			openFileName.nFilterIndex = 1;
+			openFileName.lpstrFilter = NULL;
+			openFileName.nMaxFile = MAX_PATH;
+			openFileName.nMaxFileTitle = MAX_PATH;
+
+			if (GetOpenFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
+			{
+				strcat(strFilePath, "\0");
+				long fileSize;	// 파일 전체 사이즈
+				FILE* fp;
+				fopen_s(&fp, strFilePath, "rb");	// 파일 열고
+				if (fp != NULL)
+				{
+					fseek(fp, 0, SEEK_END);
+					fileSize = ftell(fp);
+					fseek(fp, 0, SEEK_SET);
+
+					Json::Value root;
+					root["kind"] = Files;
+					root["fileSize"] = (int)fileSize;
+					root["fileName"] = strFileTitle;
+					Client::GetInstance()->SendPacketToServer(root);
+					Client::GetInstance()->SendFileDataToServer(fp, fileSize);
+
+					fclose(fp);
+				}
+			}
+			SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
+			break;
+		}
 		break;
 	case WM_CLOSE:
 		EndDialog(hDlg, wParam);

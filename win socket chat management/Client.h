@@ -10,7 +10,7 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
-	File,
+	Files,
 	Emoticon,
 };
 
@@ -37,5 +37,6 @@ public:
 	bool SendMessageToServer(std::string msg);
 
 	bool SendPacketToServer(Json::Value root);
+	bool SendFileDataToServer(FILE* fp, int fileSize);
 	Json::Value RecvPacketToServer();
 };

@@ -19,6 +19,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	HBITMAP hbmp1;
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -39,6 +40,11 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		{
 		case ID_START_SERVER_BTN:
 			AcceptThreadHandle = (HANDLE)_beginthreadex(NULL, 0, StartServer, NULL, 0, NULL);
+			
+			hbmp1 = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+
+			SendMessage(GetDlgItem(hDlg, IDC_LOG_LIST), LB_SETITEMDATA, 0,
+				(LPARAM)hbmp1);
 			break;
 		case ID_STOP_SERVER_BTN:
 			StopServer();

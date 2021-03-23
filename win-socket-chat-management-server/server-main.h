@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <time.h>
+#include <cstdio>
 #include "MembershipDB.h"
 #include "resource.h"
 
@@ -41,7 +42,7 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
-	File,
+	Files,
 	Emoticon,
 };
 
@@ -155,6 +156,9 @@ unsigned WINAPI RecvThread(void* arg)
 	SOCKET clientSocket = *(SOCKET*)arg;
 	char cBuffer[PACKET_SIZE] = {};
 	string userId, userName;
+	int totalRecvFileCount, currentRecvFileCount = 0;
+	int fileSize;
+	int readByteSize;
 
 	while ((recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
@@ -233,7 +237,27 @@ unsigned WINAPI RecvThread(void* arg)
 			}
 
 			break;
-		case File:
+		case Files:
+			currentRecvFileCount = 0;
+			fileSize = recvValue["fileSize"].asInt();
+			totalRecvFileCount = fileSize / PACKET_SIZE + 1;
+			
+			FILE* fp;
+			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "wb");
+			if (fp != NULL)
+			{
+				while (currentRecvFileCount != totalRecvFileCount)
+				{
+					readByteSize = recv(clientSocket, cBuffer, PACKET_SIZE, 0);
+					currentRecvFileCount++;
+					fwrite(cBuffer, sizeof(char), readByteSize, fp);
+				}
+
+				fclose(fp);
+			}
+
+			DebugLogUpdate(logBox, userName + " " + 
+				recvValue["fileName"].asString() + "수신완료");
 			break;
 		case Emoticon:
 			break;

@@ -6,6 +6,7 @@
 #define ID_BAN_BTN                      4
 #define ID_DELETE_USERINFO_BTN          5
 #define IDD_DIALOG_MAIN                 101
+#define IDB_BITMAP1                     103
 #define IDC_STATIC_IP                   1001
 #define IDC_STATIC_MY_IP                1002
 #define IDC_STATIC_PORT                 1003
@@ -17,14 +18,15 @@
 #define IDC_EDIT_MESSAGE                1009
 #define ID_START_SERVER_BTN             1010
 #define ID_STOP_SERVER_BTN              1011
+#define IDC_LIST2                       1013
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

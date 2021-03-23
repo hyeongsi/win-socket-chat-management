@@ -92,6 +92,30 @@ bool Client::SendPacketToServer(Json::Value root)
 	return true;
 }
 
+bool Client::SendFileDataToServer(FILE* fp, int fileSize)
+{
+	int sendBytes;	// 읽어온 파일 사이즈 저장할 변수
+	char cBuffer[PACKET_SIZE];
+	
+	snprintf(cBuffer, sizeof(cBuffer), "%d", fileSize);
+
+	while (1)
+	{
+		sendBytes = fread(cBuffer, sizeof(char), PACKET_SIZE, fp);
+		if (send(clientSocket, cBuffer, sendBytes, 0) == -1)
+		{
+			MessageBox(g_hDlg, "send error", "error", NULL);
+			// 서버 재접속 코드 작성
+			return false;
+		}
+
+		if (feof(fp))
+			break;
+	}
+
+	return true;
+}
+
 Json::Value Client::RecvPacketToServer()
 {
 	char cBuffer[PACKET_SIZE] = {};
