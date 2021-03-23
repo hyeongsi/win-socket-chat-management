@@ -34,7 +34,6 @@
 #define IDC_FRIEND_BTN                  1017
 #define IDC_STATIC_SIGNUP_PORT          1017
 #define IDC_ADDFRIEND_BTN               1018
-#define IDC_EDIT_SIGNUP_IP2             1018
 #define IDC_EDIT_SIGNUP_PORT            1018
 #define IDC_CHAT_BTN2                   1019
 #define IDC_STATIC_MYNAME               1021

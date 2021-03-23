@@ -12,6 +12,8 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 	{
 	case WM_INITDIALOG:
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
+		// init 추가해야 함, 친구내역, 내 이름 세팅 작업
+		//SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MYNAME), ""); 내이름 세팅
 		SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
 		_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
 		break;
@@ -47,9 +49,7 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 
 unsigned __stdcall RecvMessageThread(void* arg)
 {
-	COPYDATASTRUCT cds;
 	Json::Value recvJson;
-	//char* str = nullptr;
 
 	while (true)
 	{
@@ -60,15 +60,7 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		switch (recvJson["kind"].asInt())
 		{
 		case Message:
-			// 채팅 다이얼로그로 받은 데이터 넘기는 코드 작성 해야 함
-			//========================================================
-
-			cds.dwData = 0;
-			/*cds.lpData = recvJson["message"].asString().c_str();*/
-			// 이쪽 데이터 세팅 부분 잘 처리해야 함..;;
-
-			/*SendMessage(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd,
-				WM_COPYDATA, NULL, (LPARAM)&cds);*/
+			RecvJsonData(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
 			break;
 		default:
 			break;

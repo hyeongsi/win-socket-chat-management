@@ -137,14 +137,14 @@ string JsonToString(Json::Value value)
 	return str;
 }
 
-bool SendJsonData(Json::Value value)
+bool SendJsonData(Json::Value value, SOCKET socket)
 {
 	string jsonString;
 	char cBuffer[PACKET_SIZE] = {};
 	jsonString = JsonToString(value);
 	memcpy(cBuffer, jsonString.c_str(), jsonString.size());
 
-	if (send(clientSocket, cBuffer, PACKET_SIZE, 0) == -1)
+	if (send(socket, cBuffer, PACKET_SIZE, 0) == -1)
 		return false;
 	else
 		return true;
@@ -191,7 +191,7 @@ unsigned WINAPI RecvThread(void* arg)
 				sendValue["result"] = false;
 			}
 				
-			if (!SendJsonData(sendValue))
+			if (!SendJsonData(sendValue, clientSocket))
 				return 0;
 
 			break;
@@ -200,7 +200,7 @@ unsigned WINAPI RecvThread(void* arg)
 				LoginCheck(recvValue["id"].asString(),
 					recvValue["pw"].asString());
 
-			if (!SendJsonData(sendValue))
+			if (!SendJsonData(sendValue, clientSocket))
 				return 0;
 
 			if (LoginSuccess == sendValue["result"].asInt())
@@ -222,11 +222,16 @@ unsigned WINAPI RecvThread(void* arg)
 			DebugLogUpdate(logBox, userId + " / " + userName +
 				" / message : " + recvValue["message"].asString());
 
-			sendValue["kind"] = Message;
+			sendValue["kind"] = Message;	
+			sendValue["name"] = userName;
 			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 			sendValue["message"] = recvValue["message"].asString();
-			if (!SendJsonData(sendValue))
-				return 0;
+
+			for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
+			{
+				SendJsonData(sendValue, (*iterator).socket);
+			}
+
 			break;
 		case File:
 			break;
