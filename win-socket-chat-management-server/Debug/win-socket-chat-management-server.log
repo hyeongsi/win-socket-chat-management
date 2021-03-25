@@ -5,7 +5,7 @@ C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-manageme
 C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(136,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
 C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(136,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
 C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(137,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
-C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(172,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(172,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(174,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(196,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(196,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win-socket-chat-management-server\server-main.h(198,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
   win-socket-chat-management-server.vcxproj -> C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe

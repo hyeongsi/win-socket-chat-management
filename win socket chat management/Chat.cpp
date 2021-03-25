@@ -7,6 +7,7 @@ using namespace std;
 
 HWND chatDlgHandle;
 extern vector<chattingRoomHwnd> chattingDlgVector;
+extern vector<downLoadFileLine> downLoadFileLineVector;
 extern HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
@@ -21,9 +22,35 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		chatDlgHandle = hDlg;
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
 		break;
+	
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case IDC_LIST_CHAT_LOG:
+			switch (HIWORD(wParam))
+			{
+			case LBN_DBLCLK:
+				// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
+				for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
+				{
+					if (((*iterator).hwnd == hDlg) &&
+						((*iterator).line == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0)))
+					{
+						Json::Value value;
+						value["kind"] = FileMessage;
+						value["fileName"] = (*iterator).fileName;
+						Client::GetInstance()->SendPacketToServer(value);
+						// 해당 파일 이름 보내달라고 요청
+						break;
+					}
+					else
+					{
+						iterator++;
+					}
+				}
+				break;
+			}
+			break;
 		case IDC_SEND_BTN:
 			SendMessageToServer(hDlg);
 			break;
@@ -108,8 +135,10 @@ void RecvJsonData(HWND hDlg, Json::Value value)
 		break;
 	case FileMessage:
 		message = value["message"].asString();
-		// 리스트박스의 마지막 +1의 번호를 저장하고 있다가. 리스트박스의 해당 인덱스를 클릭하면
-		// send getfile을 요청해서 file을 받아오도록 하기.....
+
+		// 리스트박스 파일을 보낸 메시지, (제일 마지막 메시지) 번호를 기억하고 있다가 나중에 사용
+		downLoadFileLineVector.emplace_back(hDlg, (SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0) + 1),
+			value["fileName"].asString());
 		break;
 	}
 

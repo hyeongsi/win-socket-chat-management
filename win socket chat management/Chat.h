@@ -2,6 +2,7 @@
 
 #include "resource.h"
 #include "Client.h"
+#include <string>
 
 extern HWND g_hDlg;
 

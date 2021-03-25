@@ -152,6 +152,30 @@ bool SendJsonData(Json::Value value, SOCKET socket)
 		return true;
 }
 
+bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket)
+{
+	int sendBytes;	// 읽어온 파일 사이즈 저장할 변수
+	char cBuffer[PACKET_SIZE];
+
+	snprintf(cBuffer, sizeof(cBuffer), "%d", fileSize);
+
+	while (1)
+	{
+		sendBytes = fread(cBuffer, sizeof(char), PACKET_SIZE, fp);
+		if (send(socket, cBuffer, sendBytes, 0) == -1)
+		{
+			MessageBox(g_hDlg, "send error", "error", NULL);
+			// 서버 재접속 코드 작성
+			return false;
+		}
+
+		if (feof(fp))
+			break;
+	}
+
+	return true;
+}
+
 unsigned WINAPI RecvThread(void* arg)
 {
 	SOCKET clientSocket = *(SOCKET*)arg;
@@ -243,18 +267,18 @@ unsigned WINAPI RecvThread(void* arg)
 			fileSize = recvValue["fileSize"].asInt();
 			totalRecvFileCount = fileSize / PACKET_SIZE + 1;
 			
-			FILE* fp;
-			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "wb");
-			if (fp != NULL)
+			FILE* sfp;
+			fopen_s(&sfp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "wb");
+			if (sfp != NULL)
 			{
 				while (currentRecvFileCount != totalRecvFileCount)
 				{
 					readByteSize = recv(clientSocket, cBuffer, PACKET_SIZE, 0);
 					currentRecvFileCount++;
-					fwrite(cBuffer, sizeof(char), readByteSize, fp);
+					fwrite(cBuffer, sizeof(char), readByteSize, sfp);
 				}
 
-				fclose(fp);
+				fclose(sfp);
 			}
 
 			DebugLogUpdate(logBox, userName + " " + 
@@ -264,11 +288,33 @@ unsigned WINAPI RecvThread(void* arg)
 			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 			sendValue["message"] = userName + "님이 " +
 				recvValue["fileName"].asString() + "파일을 보냈습니다.";
+			sendValue["fileName"] = recvValue["fileName"].asString();
 
 			for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
 			{
 				SendJsonData(sendValue, (*iterator).socket);
 			}
+			break;
+		case FileMessage:
+			long fileSize;	// 파일 전체 사이즈
+			FILE* fp;
+			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// 파일 열고
+			if (fp != NULL)
+			{
+				fseek(fp, 0, SEEK_END);
+				fileSize = ftell(fp);
+				fseek(fp, 0, SEEK_SET);
+
+				Json::Value root;
+				root["kind"] = Files;
+				root["fileSize"] = (int)fileSize;
+				root["fileName"] = recvValue["fileName"].asString();
+				SendFileDataToServer(fp, fileSize, clientSocket);
+				fclose(fp);
+
+				DebugLogUpdate(logBox, userName + "파일전송요청 수신");
+			}
+			// 해당 파일 이름을 이용해서 해당 파일 열어서 파일 보내기
 			break;
 		case Emoticon:
 			break;

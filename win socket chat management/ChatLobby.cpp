@@ -5,6 +5,7 @@
 using namespace std;
 
 vector<chattingRoomHwnd> chattingDlgVector;
+vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
 HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
@@ -80,6 +81,9 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		case Message:
 		case FileMessage:
 			RecvJsonData(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
+			break;
+		case Files:
+			Client::GetInstance()->RecvFileData(recvJson);
 			break;
 		default:
 			break;

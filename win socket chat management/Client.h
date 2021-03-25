@@ -39,5 +39,6 @@ public:
 
 	bool SendPacketToServer(Json::Value root);
 	bool SendFileDataToServer(FILE* fp, int fileSize);
+	bool RecvFileData(Json::Value value);
 	Json::Value RecvPacketToServer();
 };

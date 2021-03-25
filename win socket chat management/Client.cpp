@@ -116,6 +116,35 @@ bool Client::SendFileDataToServer(FILE* fp, int fileSize)
 	return true;
 }
 
+bool Client::RecvFileData(Json::Value value)
+{
+	char cBuffer[PACKET_SIZE];
+	int totalRecvFileCount, currentRecvFileCount = 0;
+	int fileSize;
+	int readByteSize;
+
+	currentRecvFileCount = 0;
+	fileSize = value["fileSize"].asInt();
+	totalRecvFileCount = fileSize / PACKET_SIZE + 1;
+
+	FILE* fp;
+	fopen_s(&fp, ("downloadFiles\\" + value["fileName"].asString()).c_str(), "wb");
+	if (fp != NULL)
+	{
+		while (currentRecvFileCount != totalRecvFileCount)
+		{
+			readByteSize = recv(clientSocket, cBuffer, PACKET_SIZE, 0);
+			currentRecvFileCount++;
+			fwrite(cBuffer, sizeof(char), readByteSize, fp);
+		}
+
+		fclose(fp);
+		return true;
+	}
+
+	return false;
+}
+
 Json::Value Client::RecvPacketToServer()
 {
 	char cBuffer[PACKET_SIZE] = {};
