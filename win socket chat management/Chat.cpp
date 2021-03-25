@@ -1,10 +1,13 @@
 #include "Chat.h"
+#include "ChatLobby.h"
 #include <string>
 #include <atlbase.h>
 
 using namespace std;
 
 HWND chatDlgHandle;
+extern vector<chattingRoomHwnd> chattingDlgVector;
+extern HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -65,6 +68,17 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		}
 		break;
 	case WM_CLOSE:
+		for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
+		{
+			if (hDlg == (*iterator).hwnd)
+			{
+				chattingDlgVector.erase(iterator);
+				break;
+			}
+			else
+				iterator++;
+		}
+		
 		EndDialog(hDlg, wParam);
 		return TRUE;
 	}
@@ -86,9 +100,18 @@ void RecvJsonData(HWND hDlg, Json::Value value)
 	if (chatDlgHandle != hDlg)
 		return;
 
-	string message = value["name"].asString() + " : " + value["message"].asString();
-	const int substrSize = 40;
-	int i = 0;
+	string message;
+	switch (value["kind"].asInt())
+	{
+	case Message:
+		message = value["name"].asString() + " : " + value["message"].asString();
+		break;
+	case FileMessage:
+		message = value["message"].asString();
+		// 리스트박스의 마지막 +1의 번호를 저장하고 있다가. 리스트박스의 해당 인덱스를 클릭하면
+		// send getfile을 요청해서 file을 받아오도록 하기.....
+		break;
+	}
 
 	SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_ADDSTRING, 0,
 		(LPARAM)TEXT(

@@ -10,6 +10,7 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
+	FileMessage,
 	Files,
 	Emoticon,
 };

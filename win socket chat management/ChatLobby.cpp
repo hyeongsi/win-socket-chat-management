@@ -5,15 +5,19 @@
 using namespace std;
 
 vector<chattingRoomHwnd> chattingDlgVector;
+HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	int curSelNumber = 0;
+	bool isExistsRoom = false;
+
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
 		// init 추가해야 함, 친구내역, 내 이름 세팅 작업
-		//SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MYNAME), ""); 내이름 세팅
+		// SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MYNAME), ""); 내이름 세팅
 		SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
 		_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
 		break;
@@ -24,13 +28,27 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 			switch (HIWORD(wParam))
 			{
 			case LBN_DBLCLK:
-				if (0 == SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0))
+				isExistsRoom = false;
+				curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
+
+				// 몇번에있는게 방번호가 어떤건지 확인하는 로직 필요함. 일단은 0으로 설정
+				// 로그인할 때, 친구들 id 가져와서 리스트로 가지고 있고, 그에따라 대화방아무튼 구현
+				for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
 				{
-					chattingDlgVector.emplace_back(
-						ChattingRoomHwnd(CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc)
-							, 0));
-					ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
+					if ((*iterator).roomNumber == curSelNumber)
+					{
+						isExistsRoom = true;
+						break;
+					}
 				}
+
+				if (isExistsRoom)	// 방이 이미 존재하면 무시
+					break;
+
+				chattingDlgVector.emplace_back(
+					ChattingRoomHwnd(CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc)
+						, 0));
+				ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
 				break;
 			}
 			break;
@@ -60,6 +78,7 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		switch (recvJson["kind"].asInt())
 		{
 		case Message:
+		case FileMessage:
 			RecvJsonData(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
 			break;
 		default:

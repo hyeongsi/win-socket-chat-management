@@ -42,6 +42,7 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
+	FileMessage,
 	Files,
 	Emoticon,
 };
@@ -258,6 +259,16 @@ unsigned WINAPI RecvThread(void* arg)
 
 			DebugLogUpdate(logBox, userName + " " + 
 				recvValue["fileName"].asString() + "수신완료");
+
+			sendValue["kind"] = FileMessage;
+			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
+			sendValue["message"] = userName + "님이 " +
+				recvValue["fileName"].asString() + "파일을 보냈습니다.";
+
+			for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
+			{
+				SendJsonData(sendValue, (*iterator).socket);
+			}
 			break;
 		case Emoticon:
 			break;
