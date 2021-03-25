@@ -10,8 +10,8 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
-	FileMessage,
-	Files,
+	GetFileRequest,
+	SetFileRequest,
 	Emoticon,
 };
 

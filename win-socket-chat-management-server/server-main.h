@@ -42,8 +42,8 @@ enum MessageKind
 	SignUp,
 	Login,
 	Message,
-	FileMessage,
-	Files,
+	GetFileRequest,
+	SetFileRequest,
 	Emoticon,
 };
 
@@ -262,7 +262,7 @@ unsigned WINAPI RecvThread(void* arg)
 			}
 
 			break;
-		case Files:
+		case SetFileRequest:
 			currentRecvFileCount = 0;
 			fileSize = recvValue["fileSize"].asInt();
 			totalRecvFileCount = fileSize / PACKET_SIZE + 1;
@@ -284,7 +284,7 @@ unsigned WINAPI RecvThread(void* arg)
 			DebugLogUpdate(logBox, userName + " " + 
 				recvValue["fileName"].asString() + "수신완료");
 
-			sendValue["kind"] = FileMessage;
+			sendValue["kind"] = GetFileRequest;
 			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 			sendValue["message"] = userName + "님이 " +
 				recvValue["fileName"].asString() + "파일을 보냈습니다.";
@@ -295,26 +295,29 @@ unsigned WINAPI RecvThread(void* arg)
 				SendJsonData(sendValue, (*iterator).socket);
 			}
 			break;
-		case FileMessage:
+		case GetFileRequest:
 			long fileSize;	// 파일 전체 사이즈
 			FILE* fp;
+			DebugLogUpdate(logBox, userName + "파일전송요청 수신");
 			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// 파일 열고
 			if (fp != NULL)
-			{
+			{	// 파일을 보냄
+				DebugLogUpdate(logBox, userName + recvValue["fileName"]. asString() + " 파일전송시작");
 				fseek(fp, 0, SEEK_END);
 				fileSize = ftell(fp);
 				fseek(fp, 0, SEEK_SET);
 
-				Json::Value root;
-				root["kind"] = Files;
-				root["fileSize"] = (int)fileSize;
-				root["fileName"] = recvValue["fileName"].asString();
+				sendValue["kind"] = SetFileRequest;
+				sendValue["fileSize"] = (int)fileSize;
+				sendValue["fileName"] = recvValue["fileName"].asString();
+				SendJsonData(sendValue, clientSocket);
 				SendFileDataToServer(fp, fileSize, clientSocket);
 				fclose(fp);
-
-				DebugLogUpdate(logBox, userName + "파일전송요청 수신");
+				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " 파일전송성공");
 			}
-			// 해당 파일 이름을 이용해서 해당 파일 열어서 파일 보내기
+			else
+				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " 파일전송실패");
+			
 			break;
 		case Emoticon:
 			break;

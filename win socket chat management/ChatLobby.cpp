@@ -79,11 +79,12 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		switch (recvJson["kind"].asInt())
 		{
 		case Message:
-		case FileMessage:
-			RecvJsonData(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
+		case GetFileRequest:
+			SyncChatUI(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
 			break;
-		case Files:
-			Client::GetInstance()->RecvFileData(recvJson);
+		case SetFileRequest:
+			if (Client::GetInstance()->RecvFileData(recvJson))
+				MessageBox(hChatLobbyDlg, "파일 저장 완료",("downloadFiles\\" + recvJson["fileName"].asString()).c_str(),0);
 			break;
 		default:
 			break;

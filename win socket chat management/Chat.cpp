@@ -32,13 +32,14 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			case LBN_DBLCLK:
 				// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
 				for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
-				{
+				{	
 					if (((*iterator).hwnd == hDlg) &&
 						((*iterator).line == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0)))
-					{
+					{	// 로그 클릭 시 파일 업로드 메시지를 클릭했는지 체크하고, 해당 메시지 클릭 시 파일 다운로드 진행
 						Json::Value value;
-						value["kind"] = FileMessage;
+						value["kind"] = GetFileRequest;
 						value["fileName"] = (*iterator).fileName;
+						
 						Client::GetInstance()->SendPacketToServer(value);
 						// 해당 파일 이름 보내달라고 요청
 						break;
@@ -81,7 +82,7 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 					fseek(fp, 0, SEEK_SET);
 
 					Json::Value root;
-					root["kind"] = Files;
+					root["kind"] = SetFileRequest;
 					root["fileSize"] = (int)fileSize;
 					root["fileName"] = strFileTitle;
 					Client::GetInstance()->SendPacketToServer(root);
@@ -122,7 +123,7 @@ void SendMessageToServer(HWND hwnd)
 	SetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), "");
 }
 
-void RecvJsonData(HWND hDlg, Json::Value value)
+void SyncChatUI(HWND hDlg, Json::Value value)
 {
 	if (chatDlgHandle != hDlg)
 		return;
@@ -133,7 +134,7 @@ void RecvJsonData(HWND hDlg, Json::Value value)
 	case Message:
 		message = value["name"].asString() + " : " + value["message"].asString();
 		break;
-	case FileMessage:
+	case GetFileRequest:
 		message = value["message"].asString();
 
 		// 리스트박스 파일을 보낸 메시지, (제일 마지막 메시지) 번호를 기억하고 있다가 나중에 사용

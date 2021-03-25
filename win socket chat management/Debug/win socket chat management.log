@@ -1,3 +1,5 @@
 ﻿  Chat.cpp
-C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Chat.cpp(73,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  win socket chat management.vcxproj -> C:\Users\MJM\Desktop\GitTest\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Chat.cpp(74,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  ChatLobby.cpp
+  코드를 생성하고 있습니다...
+  win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe
