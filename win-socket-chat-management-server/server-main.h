@@ -133,6 +133,7 @@ unsigned WINAPI RecvThread(void* arg)
 				MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, writeData);
 				DebugLogUpdate(logBox, "회원가입 성공");
 				// db에 데이터 저장;
+				SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), BM_CLICK, 0, 0);
 				sendValue["result"] = true;
 			}
 			else
@@ -163,7 +164,7 @@ unsigned WINAPI RecvThread(void* arg)
 					userId,
 					userName));
 				
-				DebugLogUpdate(userBox, "id : " + userId + " name : " + userName);
+				SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), BM_CLICK, 0, 0);
 				DebugLogUpdate(logBox, userId + ", " + userName + " 유저 접속");
 			}
 

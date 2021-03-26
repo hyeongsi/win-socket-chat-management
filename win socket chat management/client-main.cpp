@@ -49,7 +49,7 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 				MessageBox(hDlg, "서버 통신 오류", "로그인 오류", NULL);
 				return false;
 			case Ban:
-				MessageBox(hDlg, loginValue["message"].asString().c_str(), "계정 정지", NULL);
+				MessageBox(hDlg, "정지된 계정입니다.", "계정 정지", NULL);
 				return false;
 			}
 

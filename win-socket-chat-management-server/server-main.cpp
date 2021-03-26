@@ -19,6 +19,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	vector<string> getUserIdData;
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -37,6 +38,48 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case ID_CONNECT_USER_CHECK_BTN:	// 접속사 수 확인
+			SendMessage(GetDlgItem(hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));	// 텍스트 수정
+			SendMessage(GetDlgItem(hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("모든 사용자"));// 텍스트 수정
+			SendMessage(GetDlgItem(hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// 기존 데이터 삭제
+
+			for (auto& connectUser : clientSocketList)
+				DebugLogUpdate(userBox, "id : " + connectUser.id + " name : " + connectUser.name);
+
+			break;
+		case ID_USER_CHECK_BTN:			// 모든 사용자 확인
+			SendMessage(GetDlgItem(hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("접속자"));	// 텍스트 수정
+			SendMessage(GetDlgItem(hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));// 텍스트 수정
+			SendMessage(GetDlgItem(hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);
+
+			for (auto& userInfo : MembershipDB::GetInstance()->GetUserInfoList())
+				DebugLogUpdate(userBox, "id : " + userInfo.id + " name : " + userInfo.name);
+
+			break;
+		case ID_BAN_BUTTON:
+			char tempChatMessage[PACKET_SIZE];
+			SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETTEXT, 
+				SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETCURSEL, 0, 0), 
+				(LPARAM)tempChatMessage);
+			strcat(tempChatMessage, "\0");
+			//선택중인 인덱스 문자 가져옴
+
+			getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(tempChatMessage, ' ')[2]);	// id 저장
+			if (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
+				ID, getUserIdData[0]) >= 0)
+			{
+				MessageBox(g_hDlg, (getUserIdData[0] + " 밴 실패 동일한 id가 이미 밴 상태입니다.").c_str(), 0, 0);
+				getUserIdData.clear();
+				break;
+			}
+
+			if (MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->BAN_USER_PATH, getUserIdData))
+				MessageBox(g_hDlg, (getUserIdData[0] + " 밴 성공").c_str(), 0, 0);
+			else
+				MessageBox(g_hDlg, (getUserIdData[0] + " 밴 실패").c_str(), 0, 0);
+
+			getUserIdData.clear();
+			break;
 		case ID_SERVER_SAVE_LOG_BTN:
 			for (auto i = 0; i < SendMessage(GetDlgItem(hDlg, IDC_LOG_LIST), LB_GETCOUNT, 0, 0); i++)
 			{
@@ -89,7 +132,7 @@ string GetMyIP()
 
 int CheckSignUpData(string id, string pw, string name)
 {
-	switch (MembershipDB::GetInstance()->ExistValue(ID, id))
+	switch (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, ID, id))
 	{
 	case ID:
 		return ExsistsSameId;
@@ -97,7 +140,7 @@ int CheckSignUpData(string id, string pw, string name)
 		return -2;
 	}
 
-	switch (MembershipDB::GetInstance()->ExistValue(NAME, name))
+	switch (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, NAME, name))
 	{
 	case NAME:
 		return ExsistsSameName;

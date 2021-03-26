@@ -58,9 +58,9 @@ list<string> MembershipDB::GetColumn(string str)
     return textArray;
 }
 
-int MembershipDB::ExistValue(const int kind, const std::string value)
+int MembershipDB::ExistValue(string str, const int kind, const string value)
 {
-    list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
+    list<string> textArray = GetColumn(str);
     
     if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
         return -2;  
@@ -84,7 +84,30 @@ int MembershipDB::ExistValue(const int kind, const std::string value)
     return -1;
 }
 
-std::string MembershipDB::FindName(std::string id)
+std::list<UserInfo> MembershipDB::GetUserInfoList()
+{
+    list<UserInfo> userInfoList;
+    list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
+
+    for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
+    {
+        if (loadTextIterator == textArray.begin())
+        {
+            loadTextIterator++;
+            continue;   // 첫줄 제외
+        }
+
+        vector<string> row = Split(*loadTextIterator, ',');
+        userInfoList.emplace_back(row[0], row[2]);
+
+        row.clear();
+        loadTextIterator++;
+    }
+
+    return userInfoList;
+}
+
+std::string MembershipDB::FindName(string id)
 {
     list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
 
@@ -126,7 +149,6 @@ int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* valu
         vector<string> row = Split(*loadTextIterator, ',');
         if (row[0] == id)
         {
-            (*value)["message"] = row[1] + "사유로 밴이 당했습니다.";
             return Ban;
         }
 
@@ -177,6 +199,8 @@ bool MembershipDB::WriteDataToCsv(const string path,  vector<string> data)
                 foutput << (*iterator) << ",";
             }
         }
+        foutput.close();
+        return true;
     }
 
     foutput.close();
