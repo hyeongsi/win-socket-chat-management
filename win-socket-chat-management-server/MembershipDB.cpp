@@ -1,8 +1,7 @@
 #include "MembershipDB.h"
+#include <vector>
 #include <sstream>
 #include <fstream>
-
-const char* membershipDBPath = "membershipData.csv";
 
 MembershipDB* MembershipDB::instance = nullptr;
 MembershipDB::MembershipDB() { }
@@ -37,12 +36,12 @@ void MembershipDB::ReleaseInstance()
     instance = nullptr;
 }
 
-list<string> MembershipDB::GetColumn()
+list<string> MembershipDB::GetColumn(string str)
 {
     list<string> textArray;
     ifstream finput;
-    finput.open(membershipDBPath);
-
+    finput.open(str);
+    
     if (finput.is_open())
     {
         string str;
@@ -61,7 +60,7 @@ list<string> MembershipDB::GetColumn()
 
 int MembershipDB::ExistValue(const int kind, const std::string value)
 {
-    list<string> textArray = GetColumn();
+    list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
     
     if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
         return -2;  
@@ -87,7 +86,7 @@ int MembershipDB::ExistValue(const int kind, const std::string value)
 
 std::string MembershipDB::FindName(std::string id)
 {
-    list<string> textArray = GetColumn();
+    list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
 
     if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
         return "";
@@ -113,9 +112,29 @@ std::string MembershipDB::FindName(std::string id)
     return "";
 }
 
-int MembershipDB::LoginCheck(const string id, const string pw)
+int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* value)
 {
-    list<string> textArray = GetColumn();
+    list<string> textArray = GetColumn(BAN_USER_PATH);
+    for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
+    {
+        if (loadTextIterator == textArray.begin())
+        {
+            loadTextIterator++;
+            continue;   // 첫줄 제외
+        }
+
+        vector<string> row = Split(*loadTextIterator, ',');
+        if (row[0] == id)
+        {
+            (*value)["message"] = row[1] + "사유로 밴이 당했습니다.";
+            return Ban;
+        }
+
+        row.clear();
+        loadTextIterator++;
+    }
+
+    textArray = GetColumn(MEMBERSHIIP_DB_PATH);
 
     for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
     {
@@ -128,6 +147,7 @@ int MembershipDB::LoginCheck(const string id, const string pw)
         vector<string> row = Split(*loadTextIterator, ',');
         if (row[0] == id && row[1] == pw)
         {
+            (*value)["message"] = "id 혹은 pw가 잘못되었습니다.";
              return LoginSuccess;
         }  
 
@@ -135,20 +155,33 @@ int MembershipDB::LoginCheck(const string id, const string pw)
         loadTextIterator++;
     }
 
+    (*value)["message"] = "id 혹은 pw가 잘못되었습니다.";
     return WringIdOrPassword;
 }
 
-bool MembershipDB::WriteMembershipData(const string id, const string pw, const string name)
+bool MembershipDB::WriteDataToCsv(const string path,  vector<string> data)
 {
     ofstream foutput;
-    foutput.open(membershipDBPath, ios::app);
+    foutput.open(path, ios::app);
 
     if (foutput.is_open())
     {
-        foutput << id << "," << pw << "," << name << endl;
+        for (auto iterator = data.begin(); iterator != data.end(); iterator++)
+        {
+            if ((iterator + 1) == data.end())   // 끝이라면
+            {
+                foutput<< (*iterator) << endl;
+            }
+            else
+            {
+                foutput << (*iterator) << ",";
+            }
+        }
     }
 
     foutput.close();
 
     return false;
 }
+
+

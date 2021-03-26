@@ -16,6 +16,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	Json::Value loginValue;
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -37,13 +38,18 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 
 			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), tempStr, ipEditboxCharSize);
 			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), tempStr2, ipEditboxCharSize);
-			switch (LoginCheck(tempStr, tempStr2))
+
+			loginValue = LoginCheck(tempStr, tempStr2);
+			switch (loginValue["result"].asInt())
 			{
 			case WringIdOrPassword:
-				MessageBox(hDlg, "id 혹은 pw가 잘못되었습니다.", "로그인 오류", NULL);
+				MessageBox(hDlg, loginValue["message"].asString().c_str(), "로그인 오류", NULL);
 				return false;
 			case Cancel:
 				MessageBox(hDlg, "서버 통신 오류", "로그인 오류", NULL);
+				return false;
+			case Ban:
+				MessageBox(hDlg, loginValue["message"].asString().c_str(), "계정 정지", NULL);
 				return false;
 			}
 

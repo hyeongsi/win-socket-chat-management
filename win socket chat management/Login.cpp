@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int LoginCheck(string id, string pw)
+Json::Value LoginCheck(string id, string pw)
 {
 	Client::GetInstance()->SendLoginSignToServer(id, pw);
 
@@ -10,7 +10,7 @@ int LoginCheck(string id, string pw)
 	if (recvValue == NULL)
 		return Cancel;
 
-	return recvValue["result"].asInt();
+	return recvValue;
 }
 
 bool ConnectServer(string ip, string port)

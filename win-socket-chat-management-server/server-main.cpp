@@ -19,7 +19,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	HBITMAP hbmp1;
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -38,13 +37,21 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case ID_SERVER_SAVE_LOG_BTN:
+			for (auto i = 0; i < SendMessage(GetDlgItem(hDlg, IDC_LOG_LIST), LB_GETCOUNT, 0, 0); i++)
+			{
+				char str[PACKET_SIZE];
+				SendMessage(GetDlgItem(hDlg, IDC_LOG_LIST), LB_GETTEXT, i, (LPARAM)str);
+				vector<string>writeData;
+				writeData.emplace_back(str);
+				MembershipDB::GetInstance()->WriteDataToCsv(SAVE_LOG_PATH, writeData);
+			}
+			
+			MessageBox(hDlg, "모든 로그를 저장했습니다.", "로그저장", 0);
+			break;
 		case ID_START_SERVER_BTN:
 			AcceptThreadHandle = (HANDLE)_beginthreadex(NULL, 0, StartServer, NULL, 0, NULL);
 			
-			hbmp1 = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
-
-			SendMessage(GetDlgItem(hDlg, IDC_LOG_LIST), LB_SETITEMDATA, 0,
-				(LPARAM)hbmp1);
 			break;
 		case ID_STOP_SERVER_BTN:
 			StopServer();
@@ -58,4 +65,91 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		return TRUE;
 	}
 	return FALSE;
+}
+
+string GetMyIP()
+{
+	char* ip = nullptr;
+	char name[255];
+	PHOSTENT host;
+
+	if (gethostname(name, sizeof(name)) == 0)
+	{
+		if ((host = gethostbyname(name)) != NULL)
+		{
+			ip = inet_ntoa(*(struct in_addr*)*host->h_addr_list);
+		}
+	}
+
+	if (nullptr == ip)
+		return "";
+
+	return string(ip);
+}
+
+int CheckSignUpData(string id, string pw, string name)
+{
+	switch (MembershipDB::GetInstance()->ExistValue(ID, id))
+	{
+	case ID:
+		return ExsistsSameId;
+	case -2:
+		return -2;
+	}
+
+	switch (MembershipDB::GetInstance()->ExistValue(NAME, name))
+	{
+	case NAME:
+		return ExsistsSameName;
+	case -2:
+		return -2;
+	}
+
+	return Success;
+}
+
+string JsonToString(Json::Value value)
+{
+	string str;
+	Json::StyledWriter writer;
+	str = writer.write(value);
+
+	return str;
+}
+
+bool SendJsonData(Json::Value value, SOCKET socket)
+{
+	string jsonString;
+	char cBuffer[PACKET_SIZE] = {};
+	jsonString = JsonToString(value);
+	memcpy(cBuffer, jsonString.c_str(), jsonString.size());
+
+	if (send(socket, cBuffer, PACKET_SIZE, 0) == -1)
+		return false;
+	else
+		return true;
+}
+
+bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket)
+{
+	int sendBytes;	// 읽어온 파일 사이즈 저장할 변수
+	char cBuffer[PACKET_SIZE];
+
+	snprintf(cBuffer, sizeof(cBuffer), "%d", fileSize);
+
+	while (1)
+	{
+		sendBytes = fread(cBuffer, sizeof(char), PACKET_SIZE, fp);
+		if (send(socket, cBuffer, sendBytes, 0) == -1)
+		{
+			MessageBox(g_hDlg, "send error", "error", NULL);
+			// 서버 재접속 코드 작성
+			return false;
+		}
+
+		if (feof(fp))
+			break;
+	}
+
+	return true;
 }

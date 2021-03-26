@@ -18,7 +18,13 @@
 #define IDC_EDIT_MESSAGE                1009
 #define ID_START_SERVER_BTN             1010
 #define ID_STOP_SERVER_BTN              1011
+#define ID_SERVER_SAVE_LOG_BTN          1012
 #define IDC_LIST2                       1013
+#define ID_START_SERVER_BTN3            1014
+#define ID_BAN_BUTTON                   1014
+#define ID_UNBAN_BUTTON                 1016
+#define ID_CONNECT_USER_CHECK_BTN       1017
+#define ID_USER_CHECK_BTN               1019
 
 // Next default values for new objects
 // 

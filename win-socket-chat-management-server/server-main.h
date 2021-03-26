@@ -8,12 +8,11 @@
 #include "MembershipDB.h"
 #include "resource.h"
 
-#include "jsoncppkor\include\json\json.h"
-#pragma comment(lib,"jsoncppkor\\json_vc71_libmtd.lib")
-
 using namespace std;
 
 constexpr const int PORT = 4567;
+
+const char* SAVE_LOG_PATH = "saveLog\\serverLogData.csv";
 
 enum listboxKind
 {
@@ -64,7 +63,12 @@ bool isOpenServer = false;
 time_t curTime = time(NULL);
 struct tm localTime = *localtime(&curTime);
 
+string GetMyIP();
 void DebugLogUpdate(int kind, string message);
+int CheckSignUpData(string id, string pw, string name);
+string JsonToString(Json::Value value);
+bool SendJsonData(Json::Value value, SOCKET socket);
+bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket);
 
 bool InitServer()
 {
@@ -84,93 +88,6 @@ bool InitServer()
 	{
 		MessageBox(g_hDlg, "listen Error", "error", NULL);
 		return false;
-	}
-
-	return true;
-}
-
-string GetMyIP()
-{
-	char* ip = nullptr;
-	char name[255];
-	PHOSTENT host;
-
-	if (gethostname(name, sizeof(name)) == 0)
-	{
-		if ((host = gethostbyname(name)) != NULL)
-		{
-			ip = inet_ntoa(*(struct in_addr*)*host->h_addr_list);
-		}
-	}
-
-	if (nullptr == ip)
-		return "";
-		
-	return string(ip);
-}
-
-int CheckSignUpData(string id, string pw, string name)
-{
-	switch (MembershipDB::GetInstance()->ExistValue(ID, id))
-	{
-	case ID:
-		return ExsistsSameId;
-	case -2:
-		return -2;
-	}
-
-	switch (MembershipDB::GetInstance()->ExistValue(NAME, name))
-	{
-	case NAME:
-		return ExsistsSameName;
-	case -2:
-		return -2;
-	}
-
-	return Success;
-}
-
-string JsonToString(Json::Value value)
-{
-	string str;
-	Json::StyledWriter writer;
-	str = writer.write(value);
-
-	return str;
-}
-
-bool SendJsonData(Json::Value value, SOCKET socket)
-{
-	string jsonString;
-	char cBuffer[PACKET_SIZE] = {};
-	jsonString = JsonToString(value);
-	memcpy(cBuffer, jsonString.c_str(), jsonString.size());
-
-	if (send(socket, cBuffer, PACKET_SIZE, 0) == -1)
-		return false;
-	else
-		return true;
-}
-
-bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket)
-{
-	int sendBytes;	// 읽어온 파일 사이즈 저장할 변수
-	char cBuffer[PACKET_SIZE];
-
-	snprintf(cBuffer, sizeof(cBuffer), "%d", fileSize);
-
-	while (1)
-	{
-		sendBytes = fread(cBuffer, sizeof(char), PACKET_SIZE, fp);
-		if (send(socket, cBuffer, sendBytes, 0) == -1)
-		{
-			MessageBox(g_hDlg, "send error", "error", NULL);
-			// 서버 재접속 코드 작성
-			return false;
-		}
-
-		if (feof(fp))
-			break;
 	}
 
 	return true;
@@ -200,7 +117,7 @@ unsigned WINAPI RecvThread(void* arg)
 		switch (recvValue["kind"].asInt())
 		{
 		case SignUp:
-			DebugLogUpdate(logBox, recvValue["value"].asString() + ", " + recvValue["id"].asString() + ", "+
+			DebugLogUpdate(logBox, recvValue["id"].asString() + ", "+ 
 				recvValue["pw"].asString() + ", "+ recvValue["name"].asString() + " 회원가입 요청");
 			
 			sendValue["value"] = CheckSignUpData(recvValue["id"].asString(),
@@ -208,8 +125,12 @@ unsigned WINAPI RecvThread(void* arg)
 
 			if (Success == sendValue["value"].asInt())
 			{
-				MembershipDB::GetInstance()->WriteMembershipData(
-					recvValue["id"].asString(), recvValue["pw"].asString(), recvValue["name"].asString());
+				vector<string> writeData;
+				writeData.emplace_back(recvValue["id"].asString());
+				writeData.emplace_back(recvValue["pw"].asString());
+				writeData.emplace_back(recvValue["name"].asString());
+
+				MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, writeData);
 				DebugLogUpdate(logBox, "회원가입 성공");
 				// db에 데이터 저장;
 				sendValue["result"] = true;
@@ -227,7 +148,7 @@ unsigned WINAPI RecvThread(void* arg)
 		case Login:
 			sendValue["result"] = MembershipDB::GetInstance()->
 				LoginCheck(recvValue["id"].asString(),
-					recvValue["pw"].asString());
+					recvValue["pw"].asString(), &sendValue);
 
 			if (!SendJsonData(sendValue, clientSocket))
 				return 0;

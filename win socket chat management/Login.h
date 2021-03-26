@@ -8,7 +8,8 @@ enum LoginFailed
 	LoginSuccess,
 	WringIdOrPassword,
 	Cancel,
+	Ban,
 };
 
-int LoginCheck(std::string id, std::string pw);
+Json::Value LoginCheck(std::string id, std::string pw);
 bool ConnectServer(std::string ip, std::string port);
