@@ -38,7 +38,6 @@ private:
 
 	MembershipDB();
 	
-	list<string> GetColumn(std::string str);
 public:
 	const char* MEMBERSHIIP_DB_PATH = "userData\\membershipData.csv";
 	const char* BAN_USER_PATH = "userData\\banUserData.csv";
@@ -46,12 +45,13 @@ public:
 	static MembershipDB* GetInstance();
 	static void ReleaseInstance();
 
+	list<string> GetColumn(std::string str);
 	vector<string> Split(string input, char delimiter);
 
-	int ExistValue(string str, const int kind, const string value);
+	int ExistValue(string str, const int kind, const string value, bool returnIndexNumber = false);
 
-	std::list<UserInfo> GetUserInfoList();
-	std::string FindName(string id);
+	list<UserInfo> GetUserInfoList();
+	string FindName(string id);
 	int LoginCheck(const string id, const string pw, Json::Value* value);
 	bool WriteDataToCsv(const string path, std::vector<string> data);
 };

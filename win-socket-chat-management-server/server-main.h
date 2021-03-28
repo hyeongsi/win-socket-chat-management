@@ -69,6 +69,7 @@ int CheckSignUpData(string id, string pw, string name);
 string JsonToString(Json::Value value);
 bool SendJsonData(Json::Value value, SOCKET socket);
 bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket);
+string GetUserIdInUserList();
 
 bool InitServer()
 {

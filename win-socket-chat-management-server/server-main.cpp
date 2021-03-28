@@ -20,6 +20,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	vector<string> getUserIdData;
+	int findIdIndex, count = 0;;
+
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -57,14 +59,7 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 
 			break;
 		case ID_BAN_BUTTON:
-			char tempChatMessage[PACKET_SIZE];
-			SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETTEXT, 
-				SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETCURSEL, 0, 0), 
-				(LPARAM)tempChatMessage);
-			strcat(tempChatMessage, "\0");
-			//선택중인 인덱스 문자 가져옴
-
-			getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(tempChatMessage, ' ')[2]);	// id 저장
+			getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id 저장
 			if (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
 				ID, getUserIdData[0]) >= 0)
 			{
@@ -77,6 +72,46 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 				MessageBox(g_hDlg, (getUserIdData[0] + " 밴 성공").c_str(), 0, 0);
 			else
 				MessageBox(g_hDlg, (getUserIdData[0] + " 밴 실패").c_str(), 0, 0);
+
+			getUserIdData.clear();
+			break;
+		case ID_UNBAN_BUTTON:
+			getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id 저장
+			findIdIndex = MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
+				ID, getUserIdData[0], true);
+			
+			getUserIdData.clear();
+
+			if (findIdIndex >= 0)
+			{
+				list<string> banUserData = MembershipDB::GetInstance()->GetColumn(
+					MembershipDB::GetInstance()->BAN_USER_PATH);
+
+				FILE* fp = fopen(MembershipDB::GetInstance()->BAN_USER_PATH, "w");
+				fprintf(fp, "id\n");
+				fclose(fp);
+
+				for (auto iterator : banUserData)
+				{
+					count++;
+
+					if (count == 1)
+						continue;
+					if (count - 1 == findIdIndex)
+						continue;
+
+					getUserIdData.clear();
+					getUserIdData.emplace_back(iterator);
+					MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->BAN_USER_PATH, getUserIdData);
+				}
+				
+				MessageBox(g_hDlg, "밴 취소 성공", 0, 0);
+			}
+			else
+			{
+				MessageBox(g_hDlg, "밴 취소 실패", 0, 0);
+				break;
+			}
 
 			getUserIdData.clear();
 			break;
@@ -195,4 +230,16 @@ bool SendFileDataToServer(FILE* fp, int fileSize, SOCKET socket)
 	}
 
 	return true;
+}
+
+string GetUserIdInUserList()
+{
+	char tempChatMessage[PACKET_SIZE];
+	SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETTEXT,
+		SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETCURSEL, 0, 0),
+		(LPARAM)tempChatMessage);
+	strcat(tempChatMessage, "\0");
+	//선택중인 인덱스 문자 가져옴
+
+	return tempChatMessage;
 }

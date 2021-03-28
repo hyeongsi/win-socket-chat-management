@@ -58,15 +58,17 @@ list<string> MembershipDB::GetColumn(string str)
     return textArray;
 }
 
-int MembershipDB::ExistValue(string str, const int kind, const string value)
+int MembershipDB::ExistValue(string str, const int kind, const string value, bool returnIndexNumber)
 {
     list<string> textArray = GetColumn(str);
-    
+    int count = 0;
+
     if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
         return -2;  
 
     for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
     {
+        count++;
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
@@ -75,8 +77,13 @@ int MembershipDB::ExistValue(string str, const int kind, const string value)
 
         vector<string> row = Split(*loadTextIterator, ',');
         if (row[kind] == value)
-            return kind;    // 찾으면 해당 인덱스 리턴
-
+        {
+            if(returnIndexNumber)
+                return count-1;    // 찾으면 해당 인덱스 리턴
+            else
+                return kind;    // 찾으면 해당 인덱스 리턴
+        }
+            
         row.clear();
         loadTextIterator++;
     }
@@ -111,15 +118,12 @@ std::string MembershipDB::FindName(string id)
 {
     list<string> textArray = GetColumn(MEMBERSHIIP_DB_PATH);
 
-    if (textArray.size() <= 1)  // id, pw, name 판별 문자열 때문에 첫줄은 제외
-        return "";
-
     for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
     {
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // 위와 같은 문제
+            continue;   // 첫줄 무시
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
