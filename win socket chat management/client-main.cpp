@@ -7,9 +7,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	g_hInst = hInstance;
 	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_MAIN), HWND_DESKTOP, MainDlgProc);
-	if(isLogin)
+	if (isLogin)
+	{
 		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_LOGIN), HWND_DESKTOP, ChatLobbyDlgProc);
-
+	}
+		
 	PostQuitMessage(0);
 	return 0;
 }

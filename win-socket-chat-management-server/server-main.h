@@ -169,6 +169,10 @@ unsigned WINAPI RecvThread(void* arg)
 				DebugLogUpdate(logBox, userId + ", " + userName + " 유저 접속");
 			}
 
+			sendValue["name"] = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
+			if (!SendJsonData(sendValue, clientSocket))
+				return 0;
+
 			break;
 		case Message:
 			DebugLogUpdate(logBox, userId + " / " + userName +
@@ -212,6 +216,7 @@ unsigned WINAPI RecvThread(void* arg)
 			sendValue["message"] = userName + "님이 " +
 				recvValue["fileName"].asString() + "파일을 보냈습니다.";
 			sendValue["fileName"] = recvValue["fileName"].asString();
+			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 
 			for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
 			{

@@ -10,15 +10,21 @@ HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	Json::Value recvJson;
 	int curSelNumber = 0;
 	bool isExistsRoom = false;
+	string name;
 
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
+		hChatLobbyDlg = hDlg;
 		// init 추가해야 함, 친구내역, 내 이름 세팅 작업
-		// SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MYNAME), ""); 내이름 세팅
+		recvJson = Client::GetInstance()->RecvPacketToServer();
+		name = recvJson["name"].asString();
+		SetDlgItemText(hDlg, IDC_STATIC_MYNAME, name.c_str());
+
 		SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
 		_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
 		break;
@@ -52,9 +58,6 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 				ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
 				break;
 			}
-			break;
-		case IDC_SENDTEST_BTN:
-			Client::GetInstance()->SendMessageToServer("테스트입니다.");
 			break;
 		}
 
