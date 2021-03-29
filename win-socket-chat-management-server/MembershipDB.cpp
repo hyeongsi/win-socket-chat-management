@@ -1,4 +1,4 @@
-#include "MembershipDB.h"
+ï»¿#include "MembershipDB.h"
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -63,7 +63,7 @@ int MembershipDB::ExistValue(string str, const int kind, const string value, boo
     list<string> textArray = GetColumn(str);
     int count = 0;
 
-    if (textArray.size() <= 1)  // id, pw, name ÆÇº° ¹®ÀÚ¿­ ¶§¹®¿¡ Ã¹ÁÙÀº Á¦¿Ü
+    if (textArray.size() <= 1)  // id, pw, name íŒë³„ ë¬¸ìì—´ ë•Œë¬¸ì— ì²«ì¤„ì€ ì œì™¸
         return -2;  
 
     for (auto loadTextIterator = textArray.begin(); loadTextIterator != textArray.end(); )
@@ -72,16 +72,16 @@ int MembershipDB::ExistValue(string str, const int kind, const string value, boo
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // À§¿Í °°Àº ¹®Á¦
+            continue;   // ìœ„ì™€ ê°™ì€ ë¬¸ì œ
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
         if (row[kind] == value)
         {
             if(returnIndexNumber)
-                return count-1;    // Ã£À¸¸é ÇØ´ç ÀÎµ¦½º ¸®ÅÏ
+                return count-1;    // ì°¾ìœ¼ë©´ í•´ë‹¹ ì¸ë±ìŠ¤ ë¦¬í„´
             else
-                return kind;    // Ã£À¸¸é ÇØ´ç ÀÎµ¦½º ¸®ÅÏ
+                return kind;    // ì°¾ìœ¼ë©´ í•´ë‹¹ ì¸ë±ìŠ¤ ë¦¬í„´
         }
             
         row.clear();
@@ -101,7 +101,7 @@ std::list<UserInfo> MembershipDB::GetUserInfoList()
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // Ã¹ÁÙ Á¦¿Ü
+            continue;   // ì²«ì¤„ ì œì™¸
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
@@ -123,7 +123,7 @@ std::string MembershipDB::FindName(string id)
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // Ã¹ÁÙ ¹«½Ã
+            continue;   // ì²«ì¤„ ë¬´ì‹œ
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
@@ -147,7 +147,7 @@ int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* valu
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // Ã¹ÁÙ Á¦¿Ü
+            continue;   // ì²«ì¤„ ì œì™¸
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
@@ -167,13 +167,13 @@ int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* valu
         if (loadTextIterator == textArray.begin())
         {
             loadTextIterator++;
-            continue;   // Ã¹ÁÙ Á¦¿Ü
+            continue;   // ì²«ì¤„ ì œì™¸
         }
 
         vector<string> row = Split(*loadTextIterator, ',');
         if (row[0] == id && row[1] == pw)
         {
-            (*value)["message"] = "id È¤Àº pw°¡ Àß¸øµÇ¾ú½À´Ï´Ù.";
+            (*value)["message"] = "id í˜¹ì€ pwê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.";
              return LoginSuccess;
         }  
 
@@ -181,7 +181,7 @@ int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* valu
         loadTextIterator++;
     }
 
-    (*value)["message"] = "id È¤Àº pw°¡ Àß¸øµÇ¾ú½À´Ï´Ù.";
+    (*value)["message"] = "id í˜¹ì€ pwê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.";
     return WringIdOrPassword;
 }
 
@@ -194,7 +194,7 @@ bool MembershipDB::WriteDataToCsv(const string path,  vector<string> data)
     {
         for (auto iterator = data.begin(); iterator != data.end(); iterator++)
         {
-            if ((iterator + 1) == data.end())   // ³¡ÀÌ¶ó¸é
+            if ((iterator + 1) == data.end())   // ëì´ë¼ë©´
             {
                 foutput<< (*iterator) << endl;
             }

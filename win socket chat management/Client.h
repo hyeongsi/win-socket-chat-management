@@ -13,6 +13,7 @@ enum MessageKind
 	GetFileRequest,
 	SetFileRequest,
 	Emoticon,
+	AddFriend,
 };
 
 constexpr const int PACKET_SIZE = 1024;

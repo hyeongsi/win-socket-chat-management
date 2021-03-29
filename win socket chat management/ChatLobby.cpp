@@ -7,9 +7,11 @@ using namespace std;
 vector<chattingRoomHwnd> chattingDlgVector;
 vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
 HWND hChatLobbyDlg;
+char friendId[PACKET_SIZE];
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+	Json::Value sendJson;
 	Json::Value recvJson;
 	int curSelNumber = 0;
 	bool isExistsRoom = false;
@@ -31,6 +33,13 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case IDC_ADDFRIEND_BTN:
+			sendJson["kind"] = AddFriend;
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc);
+			
+			sendJson["friendId"] = string(friendId);
+			Client::GetInstance()->SendPacketToServer(sendJson);
+			break;
 		case IDC_LIST_FRIENDS:
 			switch (HIWORD(wParam))
 			{
@@ -89,10 +98,44 @@ unsigned __stdcall RecvMessageThread(void* arg)
 			if (Client::GetInstance()->RecvFileData(recvJson))
 				MessageBox(hChatLobbyDlg, "파일 저장 완료",("downloadFiles\\" + recvJson["fileName"].asString()).c_str(),0);
 			break;
+		case AddFriend:
+			if (!recvJson["result"].asBool())
+			{
+				MessageBox(hChatLobbyDlg, recvJson["message"].asString().c_str(), "친구추가", 0);
+				break;
+			}
+
+			// 친구목록 업데이트
+			MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
+			break;
 		default:
 			break;
 		}
 	}
 	
 	return 0;
+}
+
+BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (iMessage)
+	{
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_INPUT_ID), friendId, PACKET_SIZE);
+			SendMessage(hDlg, WM_CLOSE, 0, 0);
+			break;
+		case IDCANCEL:
+			SendMessage(hDlg, WM_CLOSE, 0, 0);
+			break;
+		}
+
+		break;
+	case WM_CLOSE:
+		EndDialog(hDlg, wParam);
+		return TRUE;
+	}
+	return FALSE;
 }

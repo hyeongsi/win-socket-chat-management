@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <WinSock2.h>
 #include <process.h>
 #include <string>
@@ -44,6 +44,7 @@ enum MessageKind
 	GetFileRequest,
 	SetFileRequest,
 	Emoticon,
+	AddFriend,
 };
 
 constexpr const int PACKET_SIZE = 1024;
@@ -102,6 +103,7 @@ unsigned WINAPI RecvThread(void* arg)
 	int totalRecvFileCount, currentRecvFileCount = 0;
 	int fileSize;
 	int readByteSize;
+	int findReturnValue;
 
 	while ((recv(clientSocket, cBuffer, PACKET_SIZE, 0)) != -1)
 	{
@@ -119,7 +121,7 @@ unsigned WINAPI RecvThread(void* arg)
 		{
 		case SignUp:
 			DebugLogUpdate(logBox, recvValue["id"].asString() + ", "+ 
-				recvValue["pw"].asString() + ", "+ recvValue["name"].asString() + " È¸¿ø°¡ÀÔ ¿äÃ»");
+				recvValue["pw"].asString() + ", "+ recvValue["name"].asString() + " íšŒì›ê°€ìž… ìš”ì²­");
 			
 			sendValue["value"] = CheckSignUpData(recvValue["id"].asString(),
 				recvValue["pw"].asString(), recvValue["name"].asString());
@@ -135,14 +137,14 @@ unsigned WINAPI RecvThread(void* arg)
 				writeData.clear();
 				writeData.emplace_back(recvValue["id"].asString());
 				MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH, writeData);
-				DebugLogUpdate(logBox, "È¸¿ø°¡ÀÔ ¼º°ø");
-				// db¿¡ µ¥ÀÌÅÍ ÀúÀå;
+				DebugLogUpdate(logBox, "íšŒì›ê°€ìž… ì„±ê³µ");
+				// dbì— ë°ì´í„° ì €ìž¥;
 				SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), BM_CLICK, 0, 0);
 				sendValue["result"] = true;
 			}
 			else
 			{
-				DebugLogUpdate(logBox, "È¸¿ø°¡ÀÔ ½ÇÆÐ");
+				DebugLogUpdate(logBox, "íšŒì›ê°€ìž… ì‹¤íŒ¨");
 				sendValue["result"] = false;
 			}
 				
@@ -169,7 +171,7 @@ unsigned WINAPI RecvThread(void* arg)
 					userName));
 				
 				SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), BM_CLICK, 0, 0);
-				DebugLogUpdate(logBox, userId + ", " + userName + " À¯Àú Á¢¼Ó");
+				DebugLogUpdate(logBox, userId + ", " + userName + " ìœ ì € ì ‘ì†");
 			}
 
 			sendValue["name"] = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
@@ -212,12 +214,12 @@ unsigned WINAPI RecvThread(void* arg)
 			}
 
 			DebugLogUpdate(logBox, userName + " " + 
-				recvValue["fileName"].asString() + "¼ö½Å¿Ï·á");
+				recvValue["fileName"].asString() + "ìˆ˜ì‹ ì™„ë£Œ");
 
 			sendValue["kind"] = GetFileRequest;
 			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
-			sendValue["message"] = userName + "´ÔÀÌ " +
-				recvValue["fileName"].asString() + "ÆÄÀÏÀ» º¸³Â½À´Ï´Ù.";
+			sendValue["message"] = userName + "ë‹˜ì´ " +
+				recvValue["fileName"].asString() + "íŒŒì¼ì„ ë³´ëƒˆìŠµë‹ˆë‹¤.";
 			sendValue["fileName"] = recvValue["fileName"].asString();
 			sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 
@@ -226,14 +228,38 @@ unsigned WINAPI RecvThread(void* arg)
 				SendJsonData(sendValue, (*iterator).socket);
 			}
 			break;
+		case AddFriend:
+			sendValue["kind"] = AddFriend;
+			if (recvValue["friendId"].asString() == userId)
+			{
+				sendValue["result"] = false;
+				sendValue["message"] = "ìžê¸° ìžì‹ ì€ ì¹œêµ¬ë¡œ ë“±ë¡í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
+				SendJsonData(sendValue, clientSocket);
+				break;
+			}
+
+			findReturnValue = MembershipDB::GetInstance()->ExistValue(
+				MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, ID, recvValue["friendId"].asString());
+
+			if (findReturnValue < 0)
+			{
+				sendValue["result"] = false;
+				sendValue["message"] = "í•´ë‹¹ idëŠ” ì—†ëŠ” id ìž…ë‹ˆë‹¤.";
+				SendJsonData(sendValue, clientSocket);
+				break;
+			}
+
+			sendValue["result"] = true;
+			SendJsonData(sendValue, clientSocket);
+			break;
 		case GetFileRequest:
-			long fileSize;	// ÆÄÀÏ ÀüÃ¼ »çÀÌÁî
+			long fileSize;	// íŒŒì¼ ì „ì²´ ì‚¬ì´ì¦ˆ
 			FILE* fp;
-			DebugLogUpdate(logBox, userName + "ÆÄÀÏÀü¼Û¿äÃ» ¼ö½Å");
-			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// ÆÄÀÏ ¿­°í
+			DebugLogUpdate(logBox, userName + "íŒŒì¼ì „ì†¡ìš”ì²­ ìˆ˜ì‹ ");
+			fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// íŒŒì¼ ì—´ê³ 
 			if (fp != NULL)
-			{	// ÆÄÀÏÀ» º¸³¿
-				DebugLogUpdate(logBox, userName + recvValue["fileName"]. asString() + " ÆÄÀÏÀü¼Û½ÃÀÛ");
+			{	// íŒŒì¼ì„ ë³´ëƒ„
+				DebugLogUpdate(logBox, userName + recvValue["fileName"]. asString() + " íŒŒì¼ì „ì†¡ì‹œìž‘");
 				fseek(fp, 0, SEEK_END);
 				fileSize = ftell(fp);
 				fseek(fp, 0, SEEK_SET);
@@ -244,10 +270,10 @@ unsigned WINAPI RecvThread(void* arg)
 				SendJsonData(sendValue, clientSocket);
 				SendFileDataToServer(fp, fileSize, clientSocket);
 				fclose(fp);
-				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " ÆÄÀÏÀü¼Û¼º°ø");
+				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " íŒŒì¼ì „ì†¡ì„±ê³µ");
 			}
 			else
-				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " ÆÄÀÏÀü¼Û½ÇÆÐ");
+				DebugLogUpdate(logBox, userName + recvValue["fileName"].asString() + " íŒŒì¼ì „ì†¡ì‹¤íŒ¨");
 			
 			break;
 		case Emoticon:
@@ -262,7 +288,7 @@ unsigned WINAPI RecvThread(void* arg)
 	{
 		if ((*iterator).socket == clientSocket)
 		{
-			DebugLogUpdate(logBox, (*iterator).id + "À¯Àú ·Î±×¾Æ¿ô");
+			DebugLogUpdate(logBox, (*iterator).id + "ìœ ì € ë¡œê·¸ì•„ì›ƒ");
 			clientSocketList.erase(iterator);
 			SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_DELETESTRING, count, 0);
 			break;
@@ -287,7 +313,7 @@ unsigned WINAPI StartServer(void * arg)
 	if (!InitServer())
 		return 0;
 
-	DebugLogUpdate(logBox,"¼­¹ö°¡ ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+	DebugLogUpdate(logBox,"ì„œë²„ê°€ ì‹œìž‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 	isOpenServer = true;
 
 	int clientAddressSize = sizeof(clientAddress);
@@ -296,7 +322,7 @@ unsigned WINAPI StartServer(void * arg)
 		clientSocket = accept(serverSocket, (SOCKADDR*)&clientAddress, &clientAddressSize);
 		if (SOCKET_ERROR != clientSocket)
 		{
-			// ·Î±×ÀÎ Á¤º¸ Áß id°ª °¡Á®¿Í¼­ ¸®½ºÆ®¿¡ ÇØ´ç id°ª ³Ö¾î¾ßÇÔ Áö±ÝÀº ÀÓ½Ã·Î 123À¸·Î ¼³Á¤
+			// ë¡œê·¸ì¸ ì •ë³´ ì¤‘ idê°’ ê°€ì ¸ì™€ì„œ ë¦¬ìŠ¤íŠ¸ì— í•´ë‹¹ idê°’ ë„£ì–´ì•¼í•¨ ì§€ê¸ˆì€ ìž„ì‹œë¡œ 123ìœ¼ë¡œ ì„¤ì •
 			_beginthreadex(NULL, 0, RecvThread, &clientSocket, 0, NULL);
 		}
 	}
@@ -322,7 +348,7 @@ void StopServer()
 	AcceptThreadHandle = nullptr;
 	clientSocketList.clear();
 	isOpenServer = false;
-	DebugLogUpdate(logBox, "¼­¹ö°¡ Á¾·áµÇ¾ú½À´Ï´Ù.");
+	DebugLogUpdate(logBox, "ì„œë²„ê°€ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 void MoveScrollbarToEnd(HWND hwnd)
@@ -371,9 +397,9 @@ void DebugLogUpdate(int kind, string message)
 	case logBox:
 		listBox = GetDlgItem(g_hDlg, IDC_LOG_LIST);
 
-		logMessage = to_string(1900 + localTime.tm_year) + "³â" + to_string(localTime.tm_mon) + "¿ù"
-			+ to_string(localTime.tm_mday) + "ÀÏ" + to_string(localTime.tm_hour) + "½Ã"
-			+ to_string(localTime.tm_min) + "ºÐ" + to_string(localTime.tm_sec) + "ÃÊ" + " / " + message;
+		logMessage = to_string(1900 + localTime.tm_year) + "ë…„" + to_string(localTime.tm_mon) + "ì›”"
+			+ to_string(localTime.tm_mday) + "ì¼" + to_string(localTime.tm_hour) + "ì‹œ"
+			+ to_string(localTime.tm_min) + "ë¶„" + to_string(localTime.tm_sec) + "ì´ˆ" + " / " + message;
 		break;
 	default:
 		return;
