@@ -41,6 +41,7 @@ private:
 public:
 	const char* MEMBERSHIIP_DB_PATH = "userData\\membershipData.csv";
 	const char* BAN_USER_PATH = "userData\\banUserData.csv";
+	const char* FRIEND_LIST_PATH = "userData\\friendListData.csv";
 
 	static MembershipDB* GetInstance();
 	static void ReleaseInstance();

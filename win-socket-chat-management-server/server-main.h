@@ -132,6 +132,9 @@ unsigned WINAPI RecvThread(void* arg)
 				writeData.emplace_back(recvValue["name"].asString());
 
 				MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->MEMBERSHIIP_DB_PATH, writeData);
+				writeData.clear();
+				writeData.emplace_back(recvValue["id"].asString());
+				MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH, writeData);
 				DebugLogUpdate(logBox, "회원가입 성공");
 				// db에 데이터 저장;
 				SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), BM_CLICK, 0, 0);
