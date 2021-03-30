@@ -182,7 +182,7 @@ int MembershipDB::LoginCheck(const string id, const string pw, Json::Value* valu
     }
 
     (*value)["message"] = "id 혹은 pw가 잘못되었습니다.";
-    return WringIdOrPassword;
+    return WrongIdOrPassword;
 }
 
 bool MembershipDB::WriteDataToCsv(const string path,  vector<string> data)

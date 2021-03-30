@@ -37,15 +37,14 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		}
 		break;
 	case WM_CLOSE:
-		for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
+		for (int i = 0; i < (int)chattingDlgVector.size(); i++)
 		{
-			if (hDlg == (*iterator).hwnd)
+			if (hDlg == chattingDlgVector[i].hwnd)
 			{
-				chattingDlgVector.erase(iterator);
+				chattingDlgVector[i].hwnd = NULL;
+				chattingDlgVector[i].turnOn = false;
 				break;
 			}
-			else
-				iterator++;
 		}
 		
 		EndDialog(hDlg, wParam);
@@ -59,7 +58,14 @@ void SendMessageToServer(HWND hwnd)
 	char tempChatMessage[PACKET_SIZE];
 	GetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), tempChatMessage, PACKET_SIZE);
 
-	Client::GetInstance()->SendMessageToServer(tempChatMessage);
+	for (const auto& iterator : chattingDlgVector)
+	{
+		if (iterator.hwnd != hwnd)
+			continue;
+
+		Client::GetInstance()->SendMessageToServer(tempChatMessage, iterator.roomNumber);
+		break;
+	}
 
 	SetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), "");
 }
@@ -114,6 +120,14 @@ void GetFileDataMethod(HWND hDlg)
 			value["kind"] = GetFileRequest;
 			value["fileName"] = (*iterator).fileName;
 
+			for (const auto& iterator : chattingDlgVector)
+			{
+				if (iterator.hwnd != hDlg)
+					continue;
+
+				value["roomNumber"] = iterator.roomNumber;
+				break;
+			}
 			Client::GetInstance()->SendPacketToServer(value);
 			// 해당 파일 이름 보내달라고 요청
 			return;
@@ -147,7 +161,7 @@ void SendFileDataBtnMethod(HWND hDlg)
 
 	if (GetOpenFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
 	{
-		strcat(strFilePath, "\0");
+		strcat_s(strFilePath, "\0");
 		long fileSize;	// 파일 전체 사이즈
 		FILE* fp;
 		fopen_s(&fp, strFilePath, "rb");	// 파일 열고
@@ -161,6 +175,16 @@ void SendFileDataBtnMethod(HWND hDlg)
 			root["kind"] = SetFileRequest;
 			root["fileSize"] = (int)fileSize;
 			root["fileName"] = strFileTitle;
+
+			for (const auto& iterator : chattingDlgVector)
+			{
+				if (iterator.hwnd != hDlg)
+					continue;
+
+				root["roomNumber"] = iterator.roomNumber;
+				break;
+			}
+
 			Client::GetInstance()->SendPacketToServer(root);
 			Client::GetInstance()->SendFileDataToServer(fp, fileSize);
 

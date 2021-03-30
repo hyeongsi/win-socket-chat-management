@@ -1,12 +1,14 @@
 ﻿#pragma once
 
 #include "Chat.h"
+#include <sstream>
 #include <vector>
 
 typedef struct ChattingRoomHwnd
 {
-	HWND hwnd;
+	HWND hwnd = NULL;
 	int roomNumber;
+	bool turnOn = false;
 	ChattingRoomHwnd(HWND _hwnd, int _roomNumber) : hwnd(_hwnd), roomNumber(_roomNumber) {};
 }chattingRoomHwnd;
 
@@ -20,9 +22,13 @@ typedef struct DownLoadFileLine
 
 extern HINSTANCE g_hInst;
 
+using namespace std;
+
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 unsigned WINAPI RecvMessageThread(void* arg);
 
+vector<string> SplitString(string input, char delimiter);
+void ChattingLobbyInit(HWND hDlg);
 void AddFriendBtnMethod(HWND hDlg);
-void ClickChattingRoomMethod(HWND hDlg, bool isExistsRoom);
+void ClickChattingRoomMethod(HWND hDlg);

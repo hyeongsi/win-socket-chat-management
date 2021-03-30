@@ -9,6 +9,8 @@ enum MessageKind
 {
 	SignUp,
 	Login,
+	ChattingRoomInit,
+	GetChattringRoomName,
 	Message,
 	GetFileRequest,
 	SetFileRequest,
@@ -36,7 +38,7 @@ public:
 	void CloseSocket();
 
 	void SendLoginSignToServer(std::string id, std::string pw);
-	bool SendMessageToServer(std::string msg);
+	bool SendMessageToServer(std::string msg, const int roomNumber);
 
 	bool SendPacketToServer(Json::Value root);
 	bool SendFileDataToServer(FILE* fp, int fileSize);

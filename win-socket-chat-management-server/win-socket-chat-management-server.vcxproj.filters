@@ -24,6 +24,12 @@
     <ClInclude Include="MembershipDB.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ChattingRoom.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChattingRoomManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="win-socket-chat-management-server.rc">
@@ -35,6 +41,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MembershipDB.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ChattingRoom.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ChattingRoomManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

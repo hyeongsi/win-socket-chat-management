@@ -61,7 +61,7 @@ void ClientLoginBtnMethod(HWND hDlg, WPARAM wParam)
 	loginValue = LoginCheck(tempStr, tempStr2);
 	switch (loginValue["result"].asInt())
 	{
-	case WringIdOrPassword:
+	case WrongIdOrPassword:
 		MessageBox(hDlg, loginValue["message"].asString().c_str(), "로그인 오류", NULL);
 		return;
 	case Cancel:

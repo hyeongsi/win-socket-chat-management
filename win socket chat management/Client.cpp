@@ -59,7 +59,7 @@ void Client::SendLoginSignToServer(string id, string pw)
 	SendPacketToServer(root);
 }
 
-bool Client::SendMessageToServer(std::string msg)
+bool Client::SendMessageToServer(std::string msg, const int roomNumber)
 {
 	if (!msg.size())
 		return false;
@@ -67,7 +67,7 @@ bool Client::SendMessageToServer(std::string msg)
 	Json::Value root;
 	root["kind"] = Message;
 	root["message"] = msg.c_str();
-	// 채팅방 번호도 나중에 포함시키기
+	root["roomNumber"] = roomNumber;
 
 	return SendPacketToServer(root);
 }

@@ -1,3 +1,2 @@
-﻿  Chat.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Chat.cpp(150,3): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  ChatLobby.cpp
   win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

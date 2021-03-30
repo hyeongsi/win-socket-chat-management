@@ -106,7 +106,13 @@ unsigned WINAPI RecvThread(void* arg)
 			SignUpMessageMethod(recvValue);
 			break;
 		case Login:
-			LoginMessageMethod(recvValue, &userName, &userId);
+			LoginMessageMethod(recvValue, &userId, &userName);
+			break;
+		case ChattingRoomInit:
+			ChattingRoomInitMethod(sendValue, &userId, &userName);
+			break;
+		case GetChattringRoomName:
+			GetChattingRoomNameMethod(recvValue, sendValue);
 			break;
 		case Message:
 			JsonMessageMethod(recvValue, &userId, &userName);
@@ -148,7 +154,6 @@ unsigned WINAPI StartServer(void* arg)
 		clientSocket = accept(serverSocket, (SOCKADDR*)&clientAddress, &clientAddressSize);
 		if (SOCKET_ERROR != clientSocket)
 		{
-			// 로그인 정보 중 id값 가져와서 리스트에 해당 id값 넣어야함 지금은 임시로 123으로 설정
 			_beginthreadex(NULL, 0, RecvThread, &clientSocket, 0, NULL);
 		}
 	}
@@ -349,27 +354,27 @@ void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName
 		SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), BM_CLICK, 0, 0);
 		DebugLogUpdate(logBox, *userId + ", " + *userName + " 유저 접속");
 	}
-
-	sendValue["name"] = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
-	if (!SendJsonData(sendValue, clientSocket))
-		return;
 }
 
 void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName)
 {
 	Json::Value sendValue;
-
-	DebugLogUpdate(logBox, *userId + " / " + *userName +
+	
+	DebugLogUpdate(logBox, *userId + " / " + *userName + " / " + to_string(recvValue["roomNumber"].asInt()) +
 		" / message : " + recvValue["message"].asString());
 
 	sendValue["kind"] = Message;
 	sendValue["name"] = *userName;
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 	sendValue["message"] = recvValue["message"].asString();
-
-	for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
+	
+	for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
-		SendJsonData(sendValue, (*iterator).socket);
+		if (iterator->GetChattingRoomNumber() != recvValue["roomNumber"].asInt())
+			continue;
+
+		iterator->SendChatting(sendValue);
+		break;
 	}
 }
 
@@ -409,9 +414,13 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 	sendValue["fileName"] = recvValue["fileName"].asString();
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 
-	for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end(); iterator++)
+	for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
-		SendJsonData(sendValue, (*iterator).socket);
+		if (iterator->GetChattingRoomNumber() != recvValue["roomNumber"].asInt())
+			continue;
+
+		iterator->SendChatting(sendValue);
+		break;
 	}
 }
 
@@ -462,6 +471,8 @@ void GetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 		sendValue["kind"] = SetFileRequest;
 		sendValue["fileSize"] = (int)fileSize;
 		sendValue["fileName"] = recvValue["fileName"].asString();
+		sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
+
 		SendJsonData(sendValue, clientSocket);
 		SendFileDataToServer(fp, fileSize, clientSocket);
 		fclose(fp);
@@ -469,6 +480,81 @@ void GetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 	}
 	else
 		DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " 파일전송실패");
+}
+
+void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName)
+{
+	list<ChattingRoom*> chattingRoomList;
+	int count = 0;
+	string chattingRoomNumberStr;
+	vector<string> copyRoomNumber;
+
+	for (auto& loadTextIterator : MembershipDB::GetInstance()->GetColumn(
+		ChattingRoomManager::GetInstance()->
+		CHATTINGROOM_USER_INFO_PATH))
+	{
+		if (!count)
+		{
+			count++;
+			continue;   // 첫 줄 무시
+		}
+			
+		vector<string> row = MembershipDB::GetInstance()->Split(loadTextIterator, ',');
+		if (row[0] == *userId)
+		{
+			copyRoomNumber = row;
+			break;
+		}
+
+		row.clear();
+		count++;
+	}
+
+	if (copyRoomNumber.size() <= 0)
+	{
+		sendValue["name"] = *userName;
+		sendValue["roomNumberStr"] = "";
+		SendJsonData(sendValue, clientSocket);
+		return;
+	}
+		
+	// 채팅방 연결 처리
+	for (auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
+	{
+		for (auto i = 1; i != copyRoomNumber.size(); i++)
+		{
+			if (iterator->GetChattingRoomNumber() == stoi(copyRoomNumber[i]))
+			{
+				iterator->ConnectChattingRoom(clientSocket);
+			}
+		}
+	}
+
+	for (auto i = 1; i != copyRoomNumber.size(); i++)
+	{
+		chattingRoomNumberStr += copyRoomNumber[i];
+
+		if (i < copyRoomNumber.size() - 1)
+			chattingRoomNumberStr += ",";
+	}
+
+	sendValue["name"] = *userName;
+	sendValue["roomNumberStr"] = chattingRoomNumberStr;
+	SendJsonData(sendValue, clientSocket);
+	return;
+}
+
+void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue)
+{
+	for (auto iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
+	{
+		if (iterator->GetChattingRoomNumber() == stoi(recvValue["roomNumber"].asString()))
+		{
+			sendValue["roomName"] = iterator->GetChattingRoomName();
+			SendJsonData(sendValue, clientSocket);
+			return;
+		}
+	}
 }
 
 void ExitClient(SOCKET* clientSocket)

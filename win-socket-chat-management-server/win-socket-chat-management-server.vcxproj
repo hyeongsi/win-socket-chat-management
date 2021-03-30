@@ -139,10 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChattingRoom.cpp" />
+    <ClCompile Include="ChattingRoomManager.cpp" />
     <ClCompile Include="MembershipDB.cpp" />
     <ClCompile Include="server-main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChattingRoom.h" />
+    <ClInclude Include="ChattingRoomManager.h" />
     <ClInclude Include="MembershipDB.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="server-main.h" />

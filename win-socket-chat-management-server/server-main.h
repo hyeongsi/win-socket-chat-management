@@ -5,6 +5,7 @@
 #include <list>
 #include <time.h>
 #include <cstdio>
+#include "ChattingRoomManager.h"
 #include "MembershipDB.h"
 #include "resource.h"
 
@@ -40,6 +41,8 @@ enum MessageKind
 {
 	SignUp,
 	Login,
+	ChattingRoomInit,
+	GetChattringRoomName,
 	Message,
 	GetFileRequest,
 	SetFileRequest,
@@ -83,6 +86,8 @@ void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName);
 void SetFileRequestMessageMethod(Json::Value recvValue, string* userName);
 void AddFriendMessageMethod(Json::Value recvValue, string* userId);
 void GetFileRequestMessageMethod(Json::Value recvValue, string* userName);
+void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName);
+void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue);
 
 void ExitClient(SOCKET* clientSocket);
 

@@ -1,4 +1,5 @@
-﻿#include "ChatLobby.h"
+﻿#pragma
+#include "ChatLobby.h"
 #include <string>
 #include <process.h>
 
@@ -11,23 +12,10 @@ char friendId[PACKET_SIZE];
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	Json::Value recvJson;
-	bool isExistsRoom = false;
-	string name;
-
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
-
-		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
-		hChatLobbyDlg = hDlg;
-		// init 추가해야 함, 친구내역, 내 이름 세팅 작업
-		recvJson = Client::GetInstance()->RecvPacketToServer();
-		name = recvJson["name"].asString();
-		SetDlgItemText(hDlg, IDC_STATIC_MYNAME, name.c_str());
-
-		SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
-		_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
+		ChattingLobbyInit(hDlg);
 		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
@@ -39,11 +27,11 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 			switch (HIWORD(wParam))
 			{
 			case LBN_DBLCLK:
-				ClickChattingRoomMethod(hDlg, isExistsRoom);
+				ClickChattingRoomMethod(hDlg);
+				break;
 			}
 			break;
 		}
-
 		break;
 	case WM_CLOSE:
 		EndDialog(hDlg, wParam);
@@ -66,7 +54,14 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		{
 		case Message:
 		case GetFileRequest:
-			SyncChatUI(chattingDlgVector[recvJson["roomNumber"].asInt()].hwnd, recvJson);
+			for (const auto& iterator : chattingDlgVector)
+			{
+				if (iterator.roomNumber != recvJson["roomNumber"].asInt())
+					continue;
+
+				SyncChatUI(iterator.hwnd, recvJson);
+				break;
+			}
 			break;
 		case SetFileRequest:
 			if (Client::GetInstance()->RecvFileData(recvJson))
@@ -90,6 +85,78 @@ unsigned __stdcall RecvMessageThread(void* arg)
 	return 0;
 }
 
+vector<string> SplitString(string input, char delimiter)
+{
+	vector<string> row;
+	stringstream ss(input);
+	string buffer;
+
+	while (getline(ss, buffer, delimiter))
+	{
+		row.emplace_back(buffer);
+	}
+
+	return row;
+}
+
+void ChattingLobbyInit(HWND hDlg)
+{
+	Json::Value sendJson, recvJson;
+	vector<string> chattingRoomNumber;
+	string name;
+
+	SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
+	hChatLobbyDlg = hDlg;
+
+	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
+	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, 0));
+
+	sendJson["kind"] = ChattingRoomInit;
+	Client::GetInstance()->SendPacketToServer(sendJson);
+	recvJson = Client::GetInstance()->RecvPacketToServer();
+	name = recvJson["name"].asString();
+
+	if (recvJson["roomNumberStr"].asString() != "")
+	{
+		chattingRoomNumber = SplitString(recvJson["roomNumberStr"].asString(), ',');
+
+		sendJson["kind"] = GetChattringRoomName;
+		if (chattingRoomNumber.size() <= 0)	// 채팅방 1개일 경우
+		{
+			sendJson["roomNumber"] = recvJson["roomNumberStr"].asString();
+
+			Client::GetInstance()->SendPacketToServer(sendJson);
+			recvJson = Client::GetInstance()->RecvPacketToServer();
+			if (recvJson == NULL)
+				return;
+
+			SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+				0, (LPARAM)recvJson["roomName"].asString().c_str());
+
+			chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[0])));	// 리스트에 채팅방 번호 저장해서 관리
+		}
+		else //채팅방 n개 이상 경우
+		{
+			for (int i = 0; i < (int)chattingRoomNumber.size(); i++)
+			{
+				sendJson["roomNumber"] = chattingRoomNumber[i];
+				Client::GetInstance()->SendPacketToServer(sendJson);
+				recvJson = Client::GetInstance()->RecvPacketToServer();
+				if (recvJson == NULL)
+					return;
+
+				SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+					0, (LPARAM)recvJson["roomName"].asString().c_str());
+
+				chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[i])));	// 리스트에 채팅방 번호 저장해서 관리
+			}
+		}
+	}
+
+	SetDlgItemText(hDlg, IDC_STATIC_MYNAME, name.c_str());
+	_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
+}
+
 void AddFriendBtnMethod(HWND hDlg)
 {
 	Json::Value sendJson;
@@ -102,31 +169,20 @@ void AddFriendBtnMethod(HWND hDlg)
 	Client::GetInstance()->SendPacketToServer(sendJson);
 }
 
-void ClickChattingRoomMethod(HWND hDlg, bool isExistsRoom)
+void ClickChattingRoomMethod(HWND hDlg)
 {
 	int curSelNumber = 0;
 
-	isExistsRoom = false;
 	curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
 
-	// 몇번에있는게 방번호가 어떤건지 확인하는 로직 필요함. 일단은 0으로 설정
-	// 로그인할 때, 친구들 id 가져와서 리스트로 가지고 있고, 그에따라 대화방아무튼 구현
-	for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
-	{
-		if ((*iterator).roomNumber == curSelNumber)
-		{
-			isExistsRoom = true;
-			break;
-		}
-	}
-
-	if (isExistsRoom)	// 방이 이미 존재하면 무시
+	if (chattingDlgVector[curSelNumber].turnOn)
 		return;
 
-	chattingDlgVector.emplace_back(
-		ChattingRoomHwnd(CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc)
-			, 0));
-	ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
+	chattingDlgVector[curSelNumber].hwnd = 
+		CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc);
+	chattingDlgVector[curSelNumber].turnOn = true;
+	
+	ShowWindow(chattingDlgVector[curSelNumber].hwnd, SW_SHOW);
 	return;
 }
 

@@ -26,7 +26,7 @@ enum MembershipKey
 enum LoginFailed
 {
 	LoginSuccess,
-	WringIdOrPassword,
+	WrongIdOrPassword,
 	Cancel,
 	Ban,
 };
