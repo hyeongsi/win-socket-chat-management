@@ -35,8 +35,9 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 		{
 		case IDC_ADDFRIEND_BTN:
 			sendJson["kind"] = AddFriend;
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc);
-			
+			if (!(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc)))
+				break;
+
 			sendJson["friendId"] = string(friendId);
 			Client::GetInstance()->SendPacketToServer(sendJson);
 			break;
@@ -125,11 +126,11 @@ BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPa
 		{
 		case IDOK:
 			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_INPUT_ID), friendId, PACKET_SIZE);
-			SendMessage(hDlg, WM_CLOSE, 0, 0);
-			break;
+			EndDialog(hDlg, wParam);
+			return TRUE;
 		case IDCANCEL:
-			SendMessage(hDlg, WM_CLOSE, 0, 0);
-			break;
+			EndDialog(hDlg, wParam);
+			return FALSE;
 		}
 
 		break;
