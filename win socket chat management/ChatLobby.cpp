@@ -11,15 +11,14 @@ char friendId[PACKET_SIZE];
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	Json::Value sendJson;
 	Json::Value recvJson;
-	int curSelNumber = 0;
 	bool isExistsRoom = false;
 	string name;
 
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
+
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
 		hChatLobbyDlg = hDlg;
 		// init 추가해야 함, 친구내역, 내 이름 세팅 작업
@@ -34,39 +33,13 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 		switch (LOWORD(wParam))
 		{
 		case IDC_ADDFRIEND_BTN:
-			sendJson["kind"] = AddFriend;
-			if (!(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc)))
-				break;
-
-			sendJson["friendId"] = string(friendId);
-			Client::GetInstance()->SendPacketToServer(sendJson);
+			AddFriendBtnMethod(hDlg);
 			break;
 		case IDC_LIST_FRIENDS:
 			switch (HIWORD(wParam))
 			{
 			case LBN_DBLCLK:
-				isExistsRoom = false;
-				curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
-
-				// 몇번에있는게 방번호가 어떤건지 확인하는 로직 필요함. 일단은 0으로 설정
-				// 로그인할 때, 친구들 id 가져와서 리스트로 가지고 있고, 그에따라 대화방아무튼 구현
-				for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
-				{
-					if ((*iterator).roomNumber == curSelNumber)
-					{
-						isExistsRoom = true;
-						break;
-					}
-				}
-
-				if (isExistsRoom)	// 방이 이미 존재하면 무시
-					break;
-
-				chattingDlgVector.emplace_back(
-					ChattingRoomHwnd(CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc)
-						, 0));
-				ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
-				break;
+				ClickChattingRoomMethod(hDlg, isExistsRoom);
 			}
 			break;
 		}
@@ -115,6 +88,46 @@ unsigned __stdcall RecvMessageThread(void* arg)
 	}
 	
 	return 0;
+}
+
+void AddFriendBtnMethod(HWND hDlg)
+{
+	Json::Value sendJson;
+
+	sendJson["kind"] = AddFriend;
+	if (!(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc)))
+		return;
+
+	sendJson["friendId"] = string(friendId);
+	Client::GetInstance()->SendPacketToServer(sendJson);
+}
+
+void ClickChattingRoomMethod(HWND hDlg, bool isExistsRoom)
+{
+	int curSelNumber = 0;
+
+	isExistsRoom = false;
+	curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
+
+	// 몇번에있는게 방번호가 어떤건지 확인하는 로직 필요함. 일단은 0으로 설정
+	// 로그인할 때, 친구들 id 가져와서 리스트로 가지고 있고, 그에따라 대화방아무튼 구현
+	for (auto iterator = chattingDlgVector.begin(); iterator != chattingDlgVector.end();)
+	{
+		if ((*iterator).roomNumber == curSelNumber)
+		{
+			isExistsRoom = true;
+			break;
+		}
+	}
+
+	if (isExistsRoom)	// 방이 이미 존재하면 무시
+		return;
+
+	chattingDlgVector.emplace_back(
+		ChattingRoomHwnd(CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc)
+			, 0));
+	ShowWindow(chattingDlgVector.back().hwnd, SW_SHOW);
+	return;
 }
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)

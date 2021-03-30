@@ -12,10 +12,6 @@ extern HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	OPENFILENAME openFileName;
-	static char strFileTitle[MAX_PATH], strFileExtension[10], strFilePath[100];
-	TCHAR curDirectoryPath[256];
-
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -30,69 +26,14 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			switch (HIWORD(wParam))
 			{
 			case LBN_DBLCLK:
-				// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
-				for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
-				{	
-					if (((*iterator).hwnd == hDlg) &&
-						((*iterator).line == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0)))
-					{	// 로그 클릭 시 파일 업로드 메시지를 클릭했는지 체크하고, 해당 메시지 클릭 시 파일 다운로드 진행
-						Json::Value value;
-						value["kind"] = GetFileRequest;
-						value["fileName"] = (*iterator).fileName;
-						
-						Client::GetInstance()->SendPacketToServer(value);
-						// 해당 파일 이름 보내달라고 요청
-						break;
-					}
-					else
-					{
-						iterator++;
-					}
-				}
-				break;
+				GetFileDataMethod(hDlg);
 			}
 			break;
 		case IDC_SEND_BTN:
 			SendMessageToServer(hDlg);
 			break;
 		case IDC_FILE_BTN:
-			GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
-
-			ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
-			openFileName.lStructSize = sizeof(openFileName);
-			openFileName.hwndOwner = hDlg;
-			openFileName.lpstrTitle = "파일첨부";
-			openFileName.lpstrFileTitle = strFileTitle;
-			openFileName.lpstrFile = strFilePath;
-			openFileName.nFilterIndex = 1;
-			openFileName.lpstrFilter = NULL;
-			openFileName.nMaxFile = MAX_PATH;
-			openFileName.nMaxFileTitle = MAX_PATH;
-
-			if (GetOpenFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
-			{
-				strcat(strFilePath, "\0");
-				long fileSize;	// 파일 전체 사이즈
-				FILE* fp;
-				fopen_s(&fp, strFilePath, "rb");	// 파일 열고
-				if (fp != NULL)
-				{
-					fseek(fp, 0, SEEK_END);
-					fileSize = ftell(fp);
-					fseek(fp, 0, SEEK_SET);
-
-					Json::Value root;
-					root["kind"] = SetFileRequest;
-					root["fileSize"] = (int)fileSize;
-					root["fileName"] = strFileTitle;
-					Client::GetInstance()->SendPacketToServer(root);
-					Client::GetInstance()->SendFileDataToServer(fp, fileSize);
-
-					fclose(fp);
-				}
-			}
-			SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
-			break;
+			SendFileDataBtnMethod(hDlg);
 		}
 		break;
 	case WM_CLOSE:
@@ -159,4 +100,72 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 		i++;
 	} while (i < message.size() / substrSize);*/
 
+}
+
+void GetFileDataMethod(HWND hDlg)
+{
+	// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
+	for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
+	{
+		if (((*iterator).hwnd == hDlg) &&
+			((*iterator).line == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0)))
+		{	// 로그 클릭 시 파일 업로드 메시지를 클릭했는지 체크하고, 해당 메시지 클릭 시 파일 다운로드 진행
+			Json::Value value;
+			value["kind"] = GetFileRequest;
+			value["fileName"] = (*iterator).fileName;
+
+			Client::GetInstance()->SendPacketToServer(value);
+			// 해당 파일 이름 보내달라고 요청
+			return;
+		}
+		else
+		{
+			iterator++;
+		}
+	}
+	return;
+}
+
+void SendFileDataBtnMethod(HWND hDlg)
+{
+	TCHAR curDirectoryPath[256];
+	OPENFILENAME openFileName;
+	static char strFileTitle[MAX_PATH], strFileExtension[10], strFilePath[100];
+
+	GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
+
+	ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+	openFileName.lStructSize = sizeof(openFileName);
+	openFileName.hwndOwner = hDlg;
+	openFileName.lpstrTitle = "파일첨부";
+	openFileName.lpstrFileTitle = strFileTitle;
+	openFileName.lpstrFile = strFilePath;
+	openFileName.nFilterIndex = 1;
+	openFileName.lpstrFilter = NULL;
+	openFileName.nMaxFile = MAX_PATH;
+	openFileName.nMaxFileTitle = MAX_PATH;
+
+	if (GetOpenFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
+	{
+		strcat(strFilePath, "\0");
+		long fileSize;	// 파일 전체 사이즈
+		FILE* fp;
+		fopen_s(&fp, strFilePath, "rb");	// 파일 열고
+		if (fp != NULL)
+		{
+			fseek(fp, 0, SEEK_END);
+			fileSize = ftell(fp);
+			fseek(fp, 0, SEEK_SET);
+
+			Json::Value root;
+			root["kind"] = SetFileRequest;
+			root["fileSize"] = (int)fileSize;
+			root["fileName"] = strFileTitle;
+			Client::GetInstance()->SendPacketToServer(root);
+			Client::GetInstance()->SendFileDataToServer(fp, fileSize);
+
+			fclose(fp);
+		}
+	}
+	SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
 }

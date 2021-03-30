@@ -23,3 +23,6 @@ extern HINSTANCE g_hInst;
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 unsigned WINAPI RecvMessageThread(void* arg);
+
+void AddFriendBtnMethod(HWND hDlg);
+void ClickChattingRoomMethod(HWND hDlg, bool isExistsRoom);

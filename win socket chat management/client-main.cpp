@@ -18,7 +18,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	Json::Value loginValue;
 	switch (iMessage)
 	{
 	case WM_INITDIALOG:
@@ -28,35 +27,7 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		switch (LOWORD(wParam))
 		{
 		case ID_LOGIN_BTN:
-			char tempStr[ipEditboxCharSize], tempStr2[ipEditboxCharSize];
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_IP), tempStr, ipEditboxCharSize);
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), tempStr2, ipEditboxCharSize);
-
-			if (!ConnectServer(tempStr, tempStr2))
-			{
-				MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
-				return false;
-			}
-
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), tempStr, ipEditboxCharSize);
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), tempStr2, ipEditboxCharSize);
-
-			loginValue = LoginCheck(tempStr, tempStr2);
-			switch (loginValue["result"].asInt())
-			{
-			case WringIdOrPassword:
-				MessageBox(hDlg, loginValue["message"].asString().c_str(), "로그인 오류", NULL);
-				return false;
-			case Cancel:
-				MessageBox(hDlg, "서버 통신 오류", "로그인 오류", NULL);
-				return false;
-			case Ban:
-				MessageBox(hDlg, "정지된 계정입니다.", "계정 정지", NULL);
-				return false;
-			}
-
-			isLogin = true;
-			EndDialog(hDlg, wParam);
+			ClientLoginBtnMethod(hDlg, wParam);
 			break;
 		case ID_GOTO_SIGNUP_BTN:
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_SIGNUP), hDlg, SignUpDlgProc);
@@ -68,4 +39,39 @@ BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void ClientLoginBtnMethod(HWND hDlg, WPARAM wParam)
+{
+	Json::Value loginValue;
+	char tempStr[ipEditboxCharSize], tempStr2[ipEditboxCharSize];
+
+	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_IP), tempStr, ipEditboxCharSize);
+	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), tempStr2, ipEditboxCharSize);
+
+	if (!ConnectServer(tempStr, tempStr2))
+	{
+		MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
+		return;
+	}
+
+	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ID), tempStr, ipEditboxCharSize);
+	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_PW), tempStr2, ipEditboxCharSize);
+
+	loginValue = LoginCheck(tempStr, tempStr2);
+	switch (loginValue["result"].asInt())
+	{
+	case WringIdOrPassword:
+		MessageBox(hDlg, loginValue["message"].asString().c_str(), "로그인 오류", NULL);
+		return;
+	case Cancel:
+		MessageBox(hDlg, "서버 통신 오류", "로그인 오류", NULL);
+		return;
+	case Ban:
+		MessageBox(hDlg, "정지된 계정입니다.", "계정 정지", NULL);
+		return;
+	}
+
+	isLogin = true;
+	EndDialog(hDlg, wParam);
 }

@@ -10,3 +10,6 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 
 void SendMessageToServer(HWND hwnd);
 void SyncChatUI(HWND hDlg, Json::Value value);
+
+void GetFileDataMethod(HWND hDlg);
+void SendFileDataBtnMethod(HWND hDlg);
