@@ -72,7 +72,7 @@ void SendMessageToServer(HWND hwnd)
 
 void SyncChatUI(HWND hDlg, Json::Value value)
 {
-	if (chatDlgHandle != hDlg)
+	if (NULL == hDlg)
 		return;
 
 	string message;

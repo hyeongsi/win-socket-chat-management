@@ -1,2 +1,9 @@
-﻿  ChatLobby.cpp
+﻿  Client.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(35,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(80,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(80,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(81,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(155,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(155,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(157,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
   win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

@@ -368,6 +368,15 @@ void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName)
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 	sendValue["message"] = recvValue["message"].asString();
 	
+	if (0 == recvValue["roomNumber"].asInt())
+	{
+		for (const auto& iterator : clientSocketList)
+		{
+			SendJsonData(sendValue, iterator.socket);
+		}
+		return;
+	}
+
 	for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
 		if (iterator->GetChattingRoomNumber() != recvValue["roomNumber"].asInt())
@@ -413,6 +422,15 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 		recvValue["fileName"].asString() + "파일을 보냈습니다.";
 	sendValue["fileName"] = recvValue["fileName"].asString();
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
+
+	if (0 == recvValue["roomNumber"].asInt())
+	{
+		for (const auto& iterator : clientSocketList)
+		{
+			SendJsonData(sendValue, iterator.socket);
+		}
+		return;
+	}
 
 	for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
