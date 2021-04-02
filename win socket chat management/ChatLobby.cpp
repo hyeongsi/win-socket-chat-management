@@ -172,6 +172,7 @@ void AddFriendBtnMethod(HWND hDlg)
 void ClickChattingRoomMethod(HWND hDlg)
 {
 	int curSelNumber = 0;
+	string test;
 
 	curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
 
@@ -183,6 +184,9 @@ void ClickChattingRoomMethod(HWND hDlg)
 	chattingDlgVector[curSelNumber].turnOn = true;
 	
 	ShowWindow(chattingDlgVector[curSelNumber].hwnd, SW_SHOW);
+	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETTEXT, curSelNumber, (LPARAM)test.c_str());
+	SetWindowText(GetDlgItem(chattingDlgVector[curSelNumber].hwnd, IDC_STATIC_CHAT_ROOM_NAME)
+		, test.c_str());
 	return;
 }
 

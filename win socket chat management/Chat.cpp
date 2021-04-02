@@ -17,6 +17,8 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_INITDIALOG:
 		chatDlgHandle = hDlg;
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
+
+
 		break;
 	
 	case WM_COMMAND:

@@ -176,9 +176,9 @@ void StopServer()
 	closesocket(serverSocket);
 	AcceptThreadHandle = nullptr;
 
-	mutexVariable.lock();
+	clientSocketListMutex.lock();
 	clientSocketList.clear();
-	mutexVariable.unlock();
+	clientSocketListMutex.unlock();
 
 	isOpenServer = false;
 	DebugLogUpdate(logBox, "서버가 종료되었습니다.");
@@ -205,10 +205,10 @@ void CheckConnectUserBtnMethod()
 	SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("모든 사용자"));// 텍스트 수정
 	SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// 기존 데이터 삭제
 
-	mutexVariable.lock();
+	clientSocketListMutex.lock();
 	for (auto& connectUser : clientSocketList)
 		DebugLogUpdate(userBox, "id : " + connectUser.id + " name : " + connectUser.name);
-	mutexVariable.unlock();
+	clientSocketListMutex.unlock();
 }
 
 void CheckUserIdListBtnMethod()
@@ -359,12 +359,12 @@ void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName
 		*userId = recvValue["id"].asString();
 		*userName = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
 
-		mutexVariable.lock();
+		clientSocketListMutex.lock();
 		clientSocketList.emplace_back(UserData(
 			clientSocket,
 			*userId,
 			*userName));
-		mutexVariable.unlock();
+		clientSocketListMutex.unlock();
 
 		CheckConnectUserBtnMethod();
 		DebugLogUpdate(logBox, *userId + ", " + *userName + " 유저 접속");
@@ -385,12 +385,12 @@ void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName)
 	
 	if (0 == recvValue["roomNumber"].asInt())
 	{
-		mutexVariable.lock();
+		clientSocketListMutex.lock();
 		for (const auto& iterator : clientSocketList)
 		{
 			SendJsonData(sendValue, iterator.socket);
 		}
-		mutexVariable.unlock();
+		clientSocketListMutex.unlock();
 		return;
 	}
 
@@ -442,12 +442,12 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 
 	if (0 == recvValue["roomNumber"].asInt())
 	{
-		mutexVariable.lock();
+		clientSocketListMutex.lock();
 		for (const auto& iterator : clientSocketList)
 		{
 			SendJsonData(sendValue, iterator.socket);
 		}
-		mutexVariable.unlock();
+		clientSocketListMutex.unlock();
 		return;
 	}
 
@@ -598,7 +598,7 @@ void ExitClient(SOCKET* clientSocket)
 {
 	int count = 0;
 
-	mutexVariable.lock();
+	clientSocketListMutex.lock();
 	for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end();)
 	{
 		if ((*iterator).socket == *clientSocket)
@@ -614,7 +614,7 @@ void ExitClient(SOCKET* clientSocket)
 			iterator++;
 		}
 	}
-	mutexVariable.unlock();
+	clientSocketListMutex.unlock();
 
 	closesocket(*clientSocket);
 }
