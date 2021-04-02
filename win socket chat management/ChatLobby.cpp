@@ -8,7 +8,8 @@ using namespace std;
 vector<chattingRoomHwnd> chattingDlgVector;
 vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
 HWND hChatLobbyDlg;
-char friendId[PACKET_SIZE];
+char inputFriendId[PACKET_SIZE];
+char inputRoomName[PACKET_SIZE];
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -30,6 +31,9 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 				ClickChattingRoomMethod(hDlg);
 				break;
 			}
+			break;
+		case IDC_ADD_CHATTING_ROOM_BTN:
+			AddChattingRoomBtnMethod(hDlg);
 			break;
 		}
 		break;
@@ -76,6 +80,9 @@ unsigned __stdcall RecvMessageThread(void* arg)
 
 			// 친구목록 업데이트
 			MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
+			break;
+		case AddChattingRoom:
+			AddChattingRoomMethod(recvJson);
 			break;
 		default:
 			break;
@@ -162,17 +169,16 @@ void AddFriendBtnMethod(HWND hDlg)
 	Json::Value sendJson;
 
 	sendJson["kind"] = AddFriend;
-	if (!(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc)))
-		return;
+	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc);
 
-	sendJson["friendId"] = string(friendId);
+	sendJson["friendId"] = inputFriendId;
 	Client::GetInstance()->SendPacketToServer(sendJson);
 }
 
 void ClickChattingRoomMethod(HWND hDlg)
 {
 	int curSelNumber = 0;
-	string test;
+	string roomName;
 
 	curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
 
@@ -184,10 +190,34 @@ void ClickChattingRoomMethod(HWND hDlg)
 	chattingDlgVector[curSelNumber].turnOn = true;
 	
 	ShowWindow(chattingDlgVector[curSelNumber].hwnd, SW_SHOW);
-	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETTEXT, curSelNumber, (LPARAM)test.c_str());
+	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETTEXT, curSelNumber, (LPARAM)roomName.c_str());
 	SetWindowText(GetDlgItem(chattingDlgVector[curSelNumber].hwnd, IDC_STATIC_CHAT_ROOM_NAME)
-		, test.c_str());
+		, roomName.c_str());
 	return;
+}
+
+void AddChattingRoomBtnMethod(HWND hDlg)
+{
+	Json::Value sendJson;
+
+	sendJson["kind"] = AddChattingRoom;
+	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ROOMNAME), hDlg, InputRoomNameDlgProc);
+
+	if (string(inputRoomName) == "")
+		return;
+
+	sendJson["roomName"] = inputRoomName;
+	Client::GetInstance()->SendPacketToServer(sendJson);
+	strcpy_s(inputRoomName, PACKET_SIZE, "");
+}
+
+void AddChattingRoomMethod(Json::Value recvJson)
+{
+	if (!recvJson["result"].asBool())
+		return;
+	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
+	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+		0, (LPARAM)recvJson["roomName"].asString().c_str());
 }
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
@@ -198,10 +228,35 @@ BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPa
 		switch (LOWORD(wParam))
 		{
 		case IDOK:
-			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_INPUT_ID), friendId, PACKET_SIZE);
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_INPUT_ID), (LPSTR)inputFriendId, PACKET_SIZE);
 			EndDialog(hDlg, wParam);
 			return TRUE;
 		case IDCANCEL:
+			EndDialog(hDlg, wParam);
+			return FALSE;
+		}
+
+		break;
+	case WM_CLOSE:
+		EndDialog(hDlg, wParam);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL CALLBACK InputRoomNameDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (iMessage)
+	{
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			GetWindowText(GetDlgItem(hDlg, IDC_EDIT_INPUT_ROOMNAME), (LPSTR)inputRoomName, PACKET_SIZE);
+			EndDialog(hDlg, wParam);
+			return TRUE;
+		case IDCANCEL:
+			strcpy_s(inputRoomName, PACKET_SIZE, "");
 			EndDialog(hDlg, wParam);
 			return FALSE;
 		}

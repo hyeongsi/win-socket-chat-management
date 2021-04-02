@@ -19,6 +19,7 @@ public:
 	static ChattingRoomManager* GetInstance();
 	static void ReleaseInstance();
 
+	bool AddChattingRoom(string roomName, string userId);
 	list<ChattingRoom*> GetChattingRoomList();
 };
 

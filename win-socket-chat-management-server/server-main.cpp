@@ -98,6 +98,8 @@ unsigned WINAPI RecvThread(void* arg)
 		Json::Value recvValue, sendValue;
 		reader.parse(cBuffer, recvValue);
 
+		string test;
+
 		switch (recvValue["kind"].asInt())
 		{
 		case SignUp:
@@ -108,6 +110,12 @@ unsigned WINAPI RecvThread(void* arg)
 			break;
 		case ChattingRoomInit:
 			ChattingRoomInitMethod(sendValue, &userId, &userName);
+			break;
+		case AddChattingRoom:
+			AddChattingRoomMethod(recvValue, sendValue, &userId ,&userName);
+			break;
+		case AddChattingRoomUser:
+
 			break;
 		case GetChattringRoomName:
 			GetChattingRoomNameMethod(recvValue, sendValue);
@@ -592,6 +600,19 @@ void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue)
 			return;
 		}
 	}
+}
+
+void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName)
+{
+	DebugLogUpdate(logBox, (*userName + "의 " + recvValue["roomName"].asString() + " 채팅방 생성 요청"));
+	sendValue["kind"] = AddChattingRoom;
+	clientSocketListMutex.lock();
+	sendValue["result"] = ChattingRoomManager::GetInstance()->AddChattingRoom(recvValue["roomName"].asString(), *userId);
+	sendValue["roomName"] = recvValue["roomName"].asString();
+	sendValue["roomNumber"] = ChattingRoomManager::GetInstance()->GetChattingRoomList().back()->GetChattingRoomNumber();
+	clientSocketListMutex.unlock();
+	SendJsonData(sendValue, clientSocket);
+	DebugLogUpdate(logBox, (*userName + "의 " + recvValue["roomName"].asString() + " 채팅방 생성"));
 }
 
 void ExitClient(SOCKET* clientSocket)

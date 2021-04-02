@@ -10,6 +10,8 @@ enum MessageKind
 	SignUp,
 	Login,
 	ChattingRoomInit,
+	AddChattingRoom,
+	AddChattingRoomUser,
 	GetChattringRoomName,
 	Message,
 	GetFileRequest,

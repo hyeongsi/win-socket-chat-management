@@ -25,6 +25,7 @@ extern HINSTANCE g_hInst;
 using namespace std;
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK InputRoomNameDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 unsigned WINAPI RecvMessageThread(void* arg);
 
@@ -32,3 +33,5 @@ vector<string> SplitString(string input, char delimiter);
 void ChattingLobbyInit(HWND hDlg);
 void AddFriendBtnMethod(HWND hDlg);
 void ClickChattingRoomMethod(HWND hDlg);
+void AddChattingRoomBtnMethod(HWND hDlg);
+void AddChattingRoomMethod(Json::Value recvJson);
