@@ -1,2 +1,14 @@
-﻿  MembershipDB.cpp
+﻿  server-main.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(70,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(100,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(100,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(102,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(262,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(568,9): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(624,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(626,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(660,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(660,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(661,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(709,2): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe

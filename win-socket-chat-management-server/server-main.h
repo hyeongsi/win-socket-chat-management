@@ -5,6 +5,7 @@
 #include <list>
 #include <time.h>
 #include <cstdio>
+#include <mutex>
 #include "ChattingRoomManager.h"
 #include "MembershipDB.h"
 #include "resource.h"
@@ -53,7 +54,9 @@ enum MessageKind
 constexpr const int PACKET_SIZE = 1024;
 
 HWND g_hDlg;
+HINSTANCE g_hInst;
 HANDLE AcceptThreadHandle;
+mutex clientSocketListMutex, userIdDataVectorMutex;
 
 WSADATA wsaData;
 SOCKET clientSocket;

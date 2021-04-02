@@ -3,8 +3,6 @@
 
 BOOL CALLBACK MainDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
-HINSTANCE g_hInst;
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -177,7 +175,11 @@ void StopServer()
 
 	closesocket(serverSocket);
 	AcceptThreadHandle = nullptr;
+
+	mutexVariable.lock();
 	clientSocketList.clear();
+	mutexVariable.unlock();
+
 	isOpenServer = false;
 	DebugLogUpdate(logBox, "서버가 종료되었습니다.");
 }
@@ -203,8 +205,10 @@ void CheckConnectUserBtnMethod()
 	SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("모든 사용자"));// 텍스트 수정
 	SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// 기존 데이터 삭제
 
+	mutexVariable.lock();
 	for (auto& connectUser : clientSocketList)
 		DebugLogUpdate(userBox, "id : " + connectUser.id + " name : " + connectUser.name);
+	mutexVariable.unlock();
 }
 
 void CheckUserIdListBtnMethod()
@@ -219,12 +223,14 @@ void CheckUserIdListBtnMethod()
 
 void BanBtnMethod()
 {
+	userIdDataVectorMutex.lock();
 	getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id 저장
 	if (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
 		ID, getUserIdData[0]) >= 0)
 	{
 		MessageBox(g_hDlg, (getUserIdData[0] + " 밴 실패 동일한 id가 이미 밴 상태입니다.").c_str(), 0, 0);
 		getUserIdData.clear();
+		userIdDataVectorMutex.unlock();
 		return;
 	}
 
@@ -234,6 +240,7 @@ void BanBtnMethod()
 		MessageBox(g_hDlg, (getUserIdData[0] + " 밴 실패").c_str(), 0, 0);
 
 	getUserIdData.clear();
+	userIdDataVectorMutex.unlock();
 }
 
 void UnBanBtnMethod()
@@ -241,11 +248,13 @@ void UnBanBtnMethod()
 	int findIdIndex = 0;
 	int count = 0;
 
+	userIdDataVectorMutex.lock();
 	getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id 저장
 	findIdIndex = MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
 		ID, getUserIdData[0], true);
 
 	getUserIdData.clear();
+	userIdDataVectorMutex.unlock();
 
 	if (findIdIndex >= 0)
 	{
@@ -265,9 +274,11 @@ void UnBanBtnMethod()
 			if (count - 1 == findIdIndex)
 				continue;
 
+			userIdDataVectorMutex.lock();
 			getUserIdData.clear();
 			getUserIdData.emplace_back(iterator);
 			MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->BAN_USER_PATH, getUserIdData);
+			userIdDataVectorMutex.unlock();
 		}
 
 		MessageBox(g_hDlg, "밴 취소 성공", 0, 0);
@@ -277,7 +288,9 @@ void UnBanBtnMethod()
 		MessageBox(g_hDlg, "밴 취소 실패", 0, 0);
 	}
 
+	userIdDataVectorMutex.lock();
 	getUserIdData.clear();
+	userIdDataVectorMutex.unlock();
 }
 
 void SaveServerLogBtnMethod()
@@ -346,12 +359,14 @@ void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName
 		*userId = recvValue["id"].asString();
 		*userName = MembershipDB::GetInstance()->FindName(recvValue["id"].asString());
 
+		mutexVariable.lock();
 		clientSocketList.emplace_back(UserData(
 			clientSocket,
 			*userId,
 			*userName));
+		mutexVariable.unlock();
 
-		SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), BM_CLICK, 0, 0);
+		CheckConnectUserBtnMethod();
 		DebugLogUpdate(logBox, *userId + ", " + *userName + " 유저 접속");
 	}
 }
@@ -370,10 +385,12 @@ void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName)
 	
 	if (0 == recvValue["roomNumber"].asInt())
 	{
+		mutexVariable.lock();
 		for (const auto& iterator : clientSocketList)
 		{
 			SendJsonData(sendValue, iterator.socket);
 		}
+		mutexVariable.unlock();
 		return;
 	}
 
@@ -425,10 +442,12 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 
 	if (0 == recvValue["roomNumber"].asInt())
 	{
+		mutexVariable.lock();
 		for (const auto& iterator : clientSocketList)
 		{
 			SendJsonData(sendValue, iterator.socket);
 		}
+		mutexVariable.unlock();
 		return;
 	}
 
@@ -578,6 +597,8 @@ void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue)
 void ExitClient(SOCKET* clientSocket)
 {
 	int count = 0;
+
+	mutexVariable.lock();
 	for (auto iterator = clientSocketList.begin(); iterator != clientSocketList.end();)
 	{
 		if ((*iterator).socket == *clientSocket)
@@ -593,6 +614,7 @@ void ExitClient(SOCKET* clientSocket)
 			iterator++;
 		}
 	}
+	mutexVariable.unlock();
 
 	closesocket(*clientSocket);
 }
