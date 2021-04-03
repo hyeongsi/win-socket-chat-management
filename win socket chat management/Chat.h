@@ -13,3 +13,4 @@ void SyncChatUI(HWND hDlg, Json::Value value);
 
 void GetFileDataMethod(HWND hDlg);
 void SendFileDataBtnMethod(HWND hDlg);
+void AddUserToChatBtnMethod(HWND hDlg);

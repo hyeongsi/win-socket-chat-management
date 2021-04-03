@@ -85,15 +85,16 @@ void BanBtnMethod();
 void UnBanBtnMethod();
 void SaveServerLogBtnMethod();
 
-void SignUpMessageMethod(Json::Value recvValue);
-void LoginMessageMethod(Json::Value recvValue, string* userId, string* userName);
+void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket);
+void LoginMessageMethod(Json::Value recvValue, string* userId, string* userName, SOCKET* clientSocket);
 void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName);
-void SetFileRequestMessageMethod(Json::Value recvValue, string* userName);
-void AddFriendMessageMethod(Json::Value recvValue, string* userId);
-void GetFileRequestMessageMethod(Json::Value recvValue, string* userName);
-void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName);
-void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue);
-void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName);
+void SetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket);
+void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clientSocket);
+void GetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket);
+void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket);
+void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket);
+void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket);
+void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket);
 
 void ExitClient(SOCKET* clientSocket);
 

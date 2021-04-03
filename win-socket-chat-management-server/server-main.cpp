@@ -103,34 +103,34 @@ unsigned WINAPI RecvThread(void* arg)
 		switch (recvValue["kind"].asInt())
 		{
 		case SignUp:
-			SignUpMessageMethod(recvValue);
+			SignUpMessageMethod(recvValue, &clientSocket);
 			break;
 		case Login:
-			LoginMessageMethod(recvValue, &userId, &userName);
+			LoginMessageMethod(recvValue, &userId, &userName, &clientSocket);
 			break;
 		case ChattingRoomInit:
-			ChattingRoomInitMethod(sendValue, &userId, &userName);
+			ChattingRoomInitMethod(sendValue, &userId, &userName, &clientSocket);
 			break;
 		case AddChattingRoom:
-			AddChattingRoomMethod(recvValue, sendValue, &userId ,&userName);
+			AddChattingRoomMethod(recvValue, sendValue, &userId ,&userName, &clientSocket);
 			break;
 		case AddChattingRoomUser:
-
+			AddChattingRoomUserMethod(recvValue, sendValue, &userId, &clientSocket);
 			break;
 		case GetChattringRoomName:
-			GetChattingRoomNameMethod(recvValue, sendValue);
+			GetChattingRoomNameMethod(recvValue, sendValue, &clientSocket);
 			break;
 		case Message:
 			JsonMessageMethod(recvValue, &userId, &userName);
 			break;
 		case SetFileRequest:
-			SetFileRequestMessageMethod(recvValue, &userName);
+			SetFileRequestMessageMethod(recvValue, &userName, &clientSocket);
 			break;
 		case AddFriend:
-			AddFriendMessageMethod(recvValue, &userId);
+			AddFriendMessageMethod(recvValue, &userId, &clientSocket);
 			break;
 		case GetFileRequest:
-			GetFileRequestMessageMethod(recvValue, &userName);
+			GetFileRequestMessageMethod(recvValue, &userName, &clientSocket);
 			break;
 		case Emoticon:
 			break;
@@ -315,7 +315,7 @@ void SaveServerLogBtnMethod()
 	MessageBox(g_hDlg, "모든 로그를 저장했습니다.", "로그저장", 0);
 }
 
-void SignUpMessageMethod(Json::Value recvValue)
+void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
 
@@ -347,11 +347,11 @@ void SignUpMessageMethod(Json::Value recvValue)
 		sendValue["result"] = false;
 	}
 
-	if (!SendJsonData(sendValue, clientSocket))
+	if (!SendJsonData(sendValue, *clientSocket))
 		return;
 }
 
-void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName)
+void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
 
@@ -359,7 +359,7 @@ void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName
 		LoginCheck(recvValue["id"].asString(),
 			recvValue["pw"].asString(), &sendValue);
 
-	if (!SendJsonData(sendValue, clientSocket))
+	if (!SendJsonData(sendValue, *clientSocket))
 		return;
 
 	if (LoginSuccess == sendValue["result"].asInt())
@@ -369,7 +369,7 @@ void LoginMessageMethod(Json::Value recvValue , string* userId, string* userName
 
 		clientSocketListMutex.lock();
 		clientSocketList.emplace_back(UserData(
-			clientSocket,
+			*clientSocket,
 			*userId,
 			*userName));
 		clientSocketListMutex.unlock();
@@ -412,7 +412,7 @@ void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName)
 	}
 }
 
-void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
+void SetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
 	int totalRecvFileCount, currentRecvFileCount = 0;
@@ -430,7 +430,7 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 	{
 		while (currentRecvFileCount != totalRecvFileCount)
 		{
-			readByteSize = recv(clientSocket, cBuffer, PACKET_SIZE, 0);
+			readByteSize = recv(*clientSocket, cBuffer, PACKET_SIZE, 0);
 			currentRecvFileCount++;
 			fwrite(cBuffer, sizeof(char), readByteSize, sfp);
 		}
@@ -469,7 +469,7 @@ void SetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 	}
 }
 
-void AddFriendMessageMethod(Json::Value recvValue, string* userId)
+void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
 	int findReturnValue;
@@ -479,7 +479,7 @@ void AddFriendMessageMethod(Json::Value recvValue, string* userId)
 	{
 		sendValue["result"] = false;
 		sendValue["message"] = "자기 자신은 친구로 등록할 수 없습니다.";
-		SendJsonData(sendValue, clientSocket);
+		SendJsonData(sendValue, *clientSocket);
 		return;
 	}
 
@@ -490,15 +490,15 @@ void AddFriendMessageMethod(Json::Value recvValue, string* userId)
 	{
 		sendValue["result"] = false;
 		sendValue["message"] = "해당 id는 없는 id 입니다.";
-		SendJsonData(sendValue, clientSocket);
+		SendJsonData(sendValue, *clientSocket);
 		return;
 	}
 
 	sendValue["result"] = true;
-	SendJsonData(sendValue, clientSocket);
+	SendJsonData(sendValue, *clientSocket);
 }
 
-void GetFileRequestMessageMethod(Json::Value recvValue, string* userName)
+void GetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
 	long fileSize;	// 파일 전체 사이즈
@@ -518,8 +518,8 @@ void GetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 		sendValue["fileName"] = recvValue["fileName"].asString();
 		sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 
-		SendJsonData(sendValue, clientSocket);
-		SendFileDataToServer(fp, fileSize, clientSocket);
+		SendJsonData(sendValue, *clientSocket);
+		SendFileDataToServer(fp, fileSize, *clientSocket);
 		fclose(fp);
 		DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " 파일전송성공");
 	}
@@ -527,7 +527,7 @@ void GetFileRequestMessageMethod(Json::Value recvValue, string* userName)
 		DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " 파일전송실패");
 }
 
-void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName)
+void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket)
 {
 	list<ChattingRoom*> chattingRoomList;
 	int count = 0;
@@ -558,8 +558,9 @@ void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userN
 	if (copyRoomNumber.size() <= 0)
 	{
 		sendValue["name"] = *userName;
+		sendValue["id"] = *userId;
 		sendValue["roomNumberStr"] = "";
-		SendJsonData(sendValue, clientSocket);
+		SendJsonData(sendValue, *clientSocket);
 		return;
 	}
 		
@@ -570,7 +571,7 @@ void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userN
 		{
 			if (iterator->GetChattingRoomNumber() == stoi(copyRoomNumber[i]))
 			{
-				iterator->ConnectChattingRoom(clientSocket);
+				iterator->ConnectChattingRoom(*clientSocket);
 			}
 		}
 	}
@@ -584,25 +585,26 @@ void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userN
 	}
 
 	sendValue["name"] = *userName;
+	sendValue["id"] = *userId;
 	sendValue["roomNumberStr"] = chattingRoomNumberStr;
-	SendJsonData(sendValue, clientSocket);
+	SendJsonData(sendValue, *clientSocket);
 	return;
 }
 
-void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue)
+void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket)
 {
 	for (auto iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
 		if (iterator->GetChattingRoomNumber() == stoi(recvValue["roomNumber"].asString()))
 		{
 			sendValue["roomName"] = iterator->GetChattingRoomName();
-			SendJsonData(sendValue, clientSocket);
+			SendJsonData(sendValue, *clientSocket);
 			return;
 		}
 	}
 }
 
-void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName)
+void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket)
 {
 	DebugLogUpdate(logBox, (*userName + "의 " + recvValue["roomName"].asString() + " 채팅방 생성 요청"));
 	sendValue["kind"] = AddChattingRoom;
@@ -611,8 +613,73 @@ void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string*
 	sendValue["roomName"] = recvValue["roomName"].asString();
 	sendValue["roomNumber"] = ChattingRoomManager::GetInstance()->GetChattingRoomList().back()->GetChattingRoomNumber();
 	clientSocketListMutex.unlock();
-	SendJsonData(sendValue, clientSocket);
+	SendJsonData(sendValue, *clientSocket);
 	DebugLogUpdate(logBox, (*userName + "의 " + recvValue["roomName"].asString() + " 채팅방 생성"));
+}
+
+void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket)
+{
+	int count = 0;
+
+	vector<string> row;
+	for (const auto iterator : MembershipDB::GetInstance()->GetColumn(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH))
+	{
+		if (0 == count)
+		{
+			FILE* fp = fopen(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH, "w");
+			fclose(fp);
+			count++;
+		}
+
+		vector<string> row = MembershipDB::GetInstance()->Split(iterator, ',');
+		if (row[0] == recvValue["addUserId"].asString())
+		{
+			row.emplace_back(recvValue["roomNumber"].asString());
+		}
+
+		MembershipDB::GetInstance()->WriteDataToCsv(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH,
+			row);
+	}
+
+	if (recvValue["addUserId"].asString() == *userId)	// 본인 추가하기
+	{
+		for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
+		{
+			if (iterator->GetChattingRoomName() == recvValue["roomName"].asString())
+			{
+				iterator->ConnectChattingRoom(*clientSocket);
+				DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 성공"));
+				return;
+			}	
+		}
+		return;
+	}
+		
+	// 채팅방에 유저 추가하기
+	clientSocketListMutex.lock();
+	for (const auto& iterator : clientSocketList)
+	{
+		if (iterator.id == recvValue["addUserId"].asString())
+		{
+			for (const auto& roomListIterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
+			{
+				if (roomListIterator->GetChattingRoomName() == recvValue["roomName"].asString())
+				{
+					roomListIterator->ConnectChattingRoom(iterator.socket);
+					sendValue["kind"] = AddChattingRoomUser;
+					DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 성공"));
+					sendValue["roomName"] = recvValue["roomName"].asString();
+					sendValue["roomNumber"] = stoi(recvValue["roomNumber"].asString());
+					SendJsonData(sendValue, iterator.socket);
+					clientSocketListMutex.unlock();
+					return;
+				}
+			}
+		}
+	}
+
+	clientSocketListMutex.unlock();
+	DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 실패"));
 }
 
 void ExitClient(SOCKET* clientSocket)

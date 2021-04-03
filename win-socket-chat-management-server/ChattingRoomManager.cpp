@@ -62,6 +62,7 @@ bool ChattingRoomManager::AddChattingRoom(string roomName, string userId)
     chattingRoomInfoVector.emplace_back(to_string(chattingRoomList.back()->GetChattingRoomNumber()));
     chattingRoomInfoVector.emplace_back(roomName);
 
+
     return MembershipDB::GetInstance()->WriteDataToCsv(CHATTINGROOM_INFO_PATH, chattingRoomInfoVector);
 }
 

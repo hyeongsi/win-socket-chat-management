@@ -17,8 +17,6 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 	case WM_INITDIALOG:
 		chatDlgHandle = hDlg;
 		SetWindowPos(hDlg, HWND_TOP, 100, 100, 0, 0, SWP_NOSIZE);
-
-
 		break;
 	
 	case WM_COMMAND:
@@ -36,6 +34,9 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			break;
 		case IDC_FILE_BTN:
 			SendFileDataBtnMethod(hDlg);
+		case IDC_ADD_USER_BTN:
+			AddUserToChatBtnMethod(hDlg);
+			break;
 		}
 		break;
 	case WM_CLOSE:
@@ -194,4 +195,14 @@ void SendFileDataBtnMethod(HWND hDlg)
 		}
 	}
 	SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
+}
+
+void AddUserToChatBtnMethod(HWND hDlg)
+{
+	Json::Value sendValue;
+	sendValue["kind"] = AddChattingRoomUser;
+	sendValue["addUserId"] = "test2";
+	sendValue["roomName"] = "test";
+	sendValue["roomNumber"] = "3";
+	Client::GetInstance()->SendPacketToServer(sendValue);
 }

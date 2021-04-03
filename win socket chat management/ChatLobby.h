@@ -35,3 +35,4 @@ void AddFriendBtnMethod(HWND hDlg);
 void ClickChattingRoomMethod(HWND hDlg);
 void AddChattingRoomBtnMethod(HWND hDlg);
 void AddChattingRoomMethod(Json::Value recvJson);
+void AddChattingRoomUserMethod(Json::Value recvJson);

@@ -10,6 +10,7 @@ vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 �
 HWND hChatLobbyDlg;
 char inputFriendId[PACKET_SIZE];
 char inputRoomName[PACKET_SIZE];
+string myId;
 
 BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -84,6 +85,9 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		case AddChattingRoom:
 			AddChattingRoomMethod(recvJson);
 			break;
+		case AddChattingRoomUser:
+			AddChattingRoomUserMethod(recvJson);
+			break;
 		default:
 			break;
 		}
@@ -122,6 +126,7 @@ void ChattingLobbyInit(HWND hDlg)
 	Client::GetInstance()->SendPacketToServer(sendJson);
 	recvJson = Client::GetInstance()->RecvPacketToServer();
 	name = recvJson["name"].asString();
+	myId = recvJson["id"].asString();
 
 	if (recvJson["roomNumberStr"].asString() != "")
 	{
@@ -215,6 +220,21 @@ void AddChattingRoomMethod(Json::Value recvJson)
 {
 	if (!recvJson["result"].asBool())
 		return;
+
+	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
+	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+		0, (LPARAM)recvJson["roomName"].asString().c_str());
+
+	Json::Value sendJson;
+	sendJson["kind"] = AddChattingRoomUser;
+	sendJson["addUserId"] = myId;
+	sendJson["roomName"] = recvJson["roomName"].asString();
+	sendJson["roomNumber"] = to_string(recvJson["roomNumber"].asInt());
+	Client::GetInstance()->SendPacketToServer(sendJson);
+}
+
+void AddChattingRoomUserMethod(Json::Value recvJson)
+{
 	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
