@@ -120,6 +120,9 @@ unsigned WINAPI RecvThread(void* arg)
 		case GetChattringRoomName:
 			GetChattingRoomNameMethod(recvValue, sendValue, &clientSocket);
 			break;
+		case GetFriendData:
+			GetFriendDataMethod(sendValue, &userId, &clientSocket);
+			break;
 		case Message:
 			JsonMessageMethod(recvValue, &userId, &userName);
 			break;
@@ -680,6 +683,46 @@ void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, str
 
 	clientSocketListMutex.unlock();
 	DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 실패"));
+}
+
+void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket)
+{
+	Json::Value sendValue;
+	string friendString = "";
+
+	list<string> friendList =
+		MembershipDB::GetInstance()->GetColumn(MembershipDB::GetInstance()->FRIEND_LIST_PATH);
+
+	for (auto loadTextIterator = friendList.begin(); loadTextIterator != friendList.end(); )
+	{
+		if (loadTextIterator == friendList.begin())
+		{
+			loadTextIterator++;
+			continue;   // 첫줄 제외
+		}
+
+		vector<string> row = MembershipDB::GetInstance()->Split(*loadTextIterator, ',');
+
+		if (row[0] == *userId)
+		{
+			for(int i = 1; i < row.size(); i++)
+			{
+				friendString += row[i];
+
+				if (i < row.size() - 1)
+					friendString += ",";
+			}
+
+
+			sendValue["kind"] = GetFriendData;
+			sendValue["friend"] = friendString;
+
+			SendJsonData(sendValue, *clientSocket);
+		}
+
+		row.clear();
+		loadTextIterator++;
+	}
 }
 
 void ExitClient(SOCKET* clientSocket)

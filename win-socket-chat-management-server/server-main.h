@@ -46,6 +46,7 @@ enum MessageKind
 	AddChattingRoom,
 	AddChattingRoomUser,
 	GetChattringRoomName,
+	GetFriendData,
 	Message,
 	GetFileRequest,
 	SetFileRequest,
@@ -95,6 +96,7 @@ void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userN
 void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket);
 void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket);
 void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket);
+void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket);
 
 void ExitClient(SOCKET* clientSocket);
 

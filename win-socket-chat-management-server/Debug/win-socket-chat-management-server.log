@@ -1,15 +1,50 @@
 ﻿  server-main.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(74,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(75,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(97,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(97,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
 C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(99,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(272,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(583,9): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(629,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(718,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(720,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(754,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(754,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(755,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(803,2): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(152,3): error C2360: 'friendList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(152,3): error C2360: 'friendValue' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(152,3): error C2360: 'friendValueList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(155,3): error C2360: 'friendList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(155,3): error C2360: 'friendValue' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(155,3): error C2360: 'friendValueList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(158,3): error C2360: 'friendList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(158,3): error C2360: 'friendValue' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(158,3): error C2360: 'friendValueList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(161,3): error C2360: 'friendList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(161,3): error C2360: 'friendValue' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(161,3): error C2360: 'friendValueList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(164,3): error C2360: 'friendList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(164,3): error C2360: 'friendValue' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(164,3): error C2360: 'friendValueList' 초기화가 'case' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(166,3): error C2361: 'friendList' 초기화가 'default' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(128): message : 'friendList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(166,3): error C2361: 'friendValue' 초기화가 'default' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(126): message : 'friendValue' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(166,3): error C2361: 'friendValueList' 초기화가 'default' 레이블에 의해 생략되었습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(125): message : 'friendValueList' 선언을 참조하십시오.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(301,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(612,9): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(658,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(747,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(749,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(783,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(783,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(784,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(832,2): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.

@@ -13,6 +13,7 @@ enum MessageKind
 	AddChattingRoom,
 	AddChattingRoomUser,
 	GetChattringRoomName,
+	GetFriendData,
 	Message,
 	GetFileRequest,
 	SetFileRequest,
