@@ -6,8 +6,10 @@
 using namespace std;
 
 HWND chatDlgHandle;
+char inputFriendIdInChat[PACKET_SIZE];
 extern vector<chattingRoomHwnd> chattingDlgVector;
 extern vector<downLoadFileLine> downLoadFileLineVector;
+extern vector<string> friendVector;
 extern HWND hChatLobbyDlg;
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
@@ -27,6 +29,7 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			{
 			case LBN_DBLCLK:
 				GetFileDataMethod(hDlg);
+				break;
 			}
 			break;
 		case IDC_SEND_BTN:
@@ -34,6 +37,7 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			break;
 		case IDC_FILE_BTN:
 			SendFileDataBtnMethod(hDlg);
+			break;
 		case IDC_ADD_USER_BTN:
 			AddUserToChatBtnMethod(hDlg);
 			break;
@@ -199,10 +203,61 @@ void SendFileDataBtnMethod(HWND hDlg)
 
 void AddUserToChatBtnMethod(HWND hDlg)
 {
+	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_ADD_CHAT_USER), hDlg, AddFriendInChatDlgProc);
+	if (strcmp(inputFriendIdInChat, "") == 0)
+		return;
+
+	char roomName[PACKET_SIZE];
+
 	Json::Value sendValue;
 	sendValue["kind"] = AddChattingRoomUser;
-	sendValue["addUserId"] = "test2";
-	sendValue["roomName"] = "test";
-	sendValue["roomNumber"] = "3";
+	sendValue["addUserId"] = inputFriendIdInChat;
+	GetWindowText(GetDlgItem(hDlg, IDC_STATIC_CHAT_ROOM_NAME), (LPSTR)roomName, PACKET_SIZE);
+	sendValue["roomName"] = roomName;
+	
+	for (const auto& iterator : chattingDlgVector)
+	{
+		if (hDlg == iterator.hwnd)
+		{
+			sendValue["roomNumber"] = to_string(iterator.roomNumber);
+			break;
+		}
+	}
 	Client::GetInstance()->SendPacketToServer(sendValue);
+
+	strcpy_s(inputFriendIdInChat, PACKET_SIZE, "");
+}
+
+BOOL CALLBACK AddFriendInChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (iMessage)
+	{
+	case WM_INITDIALOG:
+		for (auto myFriend : friendVector)
+		{
+			SendMessage(GetDlgItem(hDlg, IDC_ADD_FRIEND_LIST), LB_ADDSTRING, 0,
+				(LPARAM)TEXT(
+					myFriend.c_str()));
+		}
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			SendMessage(GetDlgItem(hDlg, IDC_ADD_FRIEND_LIST), LB_GETTEXT,
+				SendMessage(GetDlgItem(hDlg, IDC_ADD_FRIEND_LIST), LB_GETCURSEL, 0, 0), (LPARAM)inputFriendIdInChat);
+			EndDialog(hDlg, wParam);
+			return TRUE;
+		case IDCANCEL:
+			strcpy_s(inputFriendIdInChat, PACKET_SIZE, "");
+			EndDialog(hDlg, wParam);
+			return FALSE;
+		}
+
+		break;
+	case WM_CLOSE:
+		EndDialog(hDlg, wParam);
+		return TRUE;
+	}
+	return FALSE;
 }

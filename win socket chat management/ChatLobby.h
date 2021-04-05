@@ -31,8 +31,10 @@ unsigned WINAPI RecvMessageThread(void* arg);
 
 vector<string> SplitString(string input, char delimiter);
 void ChattingLobbyInit(HWND hDlg);
+void FriendListInit(HWND hDlg);
 void AddFriendBtnMethod(HWND hDlg);
 void ClickChattingRoomMethod(HWND hDlg);
 void AddChattingRoomBtnMethod(HWND hDlg);
 void AddChattingRoomMethod(Json::Value recvJson);
 void AddChattingRoomUserMethod(Json::Value recvJson);
+void GetFriendDataMethod(Json::Value recvJson);

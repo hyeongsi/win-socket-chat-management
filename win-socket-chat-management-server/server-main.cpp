@@ -339,6 +339,10 @@ void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket)
 		writeData.clear();
 		writeData.emplace_back(recvValue["id"].asString());
 		MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH, writeData);
+		writeData.clear();
+		writeData.emplace_back(recvValue["id"].asString());
+		writeData.emplace_back("1");
+		MembershipDB::GetInstance()->WriteDataToCsv(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH, writeData);
 		DebugLogUpdate(logBox, "회원가입 성공");
 		// db에 데이터 저장;
 		SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), BM_CLICK, 0, 0);
@@ -497,7 +501,49 @@ void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clien
 		return;
 	}
 
-	sendValue["result"] = true;
+	int count = 0;
+	bool isExistValue = false;
+	vector<string> row;
+	for (const auto iterator : MembershipDB::GetInstance()->GetColumn(MembershipDB::GetInstance()->FRIEND_LIST_PATH))
+	{
+		if (0 == count)
+		{
+			FILE* fp = fopen(MembershipDB::GetInstance()->FRIEND_LIST_PATH, "w");
+			fclose(fp);
+			count++;
+		}
+
+		vector<string> row = MembershipDB::GetInstance()->Split(iterator, ',');
+		if (row[0] == *userId)
+		{
+			for (int i = 1; i < row.size(); i++)
+			{
+				if (row[i] == recvValue["friendId"].asString())
+				{
+					isExistValue = true;
+					break;
+				}
+			}
+
+			if(!isExistValue)
+				row.emplace_back(recvValue["friendId"].asString());
+		}
+
+		MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH,
+			row);
+	}
+
+	if (isExistValue)
+	{
+		sendValue["result"] = false;
+		sendValue["message"] = "이미 등록되어 있는 친구입니다.";
+	}
+	else
+	{
+		sendValue["result"] = true;
+		sendValue["friendId"] = recvValue["friendId"].asString();
+	}
+	
 	SendJsonData(sendValue, *clientSocket);
 }
 
@@ -572,9 +618,16 @@ void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userN
 	{
 		for (auto i = 1; i != copyRoomNumber.size(); i++)
 		{
-			if (iterator->GetChattingRoomNumber() == stoi(copyRoomNumber[i]))
+			try
 			{
-				iterator->ConnectChattingRoom(*clientSocket);
+				if (iterator->GetChattingRoomNumber() == stoi(copyRoomNumber[i]))
+				{
+					iterator->ConnectChattingRoom(*clientSocket);
+				}
+			}
+			catch (const std::exception&)
+			{
+
 			}
 		}
 	}
@@ -635,13 +688,21 @@ void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, str
 		}
 
 		vector<string> row = MembershipDB::GetInstance()->Split(iterator, ',');
-		if (row[0] == recvValue["addUserId"].asString())
+		vector<string> fixedRow;
+
+		for (int i = 0; i < row.size(); i++)
 		{
-			row.emplace_back(recvValue["roomNumber"].asString());
+			if (row[i] != "")
+				fixedRow.emplace_back(row[i]);
+		}
+
+		if (fixedRow[0] == recvValue["addUserId"].asString())
+		{
+			fixedRow.emplace_back(recvValue["roomNumber"].asString());
 		}
 
 		MembershipDB::GetInstance()->WriteDataToCsv(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH,
-			row);
+			fixedRow);
 	}
 
 	if (recvValue["addUserId"].asString() == *userId)	// 본인 추가하기
@@ -682,12 +743,11 @@ void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, str
 	}
 
 	clientSocketListMutex.unlock();
-	DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 실패"));
+	DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "유저 추가 성공"));
 }
 
 void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket)
 {
-	Json::Value sendValue;
 	string friendString = "";
 
 	list<string> friendList =
@@ -713,11 +773,11 @@ void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSo
 					friendString += ",";
 			}
 
-
 			sendValue["kind"] = GetFriendData;
 			sendValue["friend"] = friendString;
 
 			SendJsonData(sendValue, *clientSocket);
+			break;
 		}
 
 		row.clear();

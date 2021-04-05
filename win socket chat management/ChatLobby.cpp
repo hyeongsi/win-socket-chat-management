@@ -7,6 +7,7 @@ using namespace std;
 
 vector<chattingRoomHwnd> chattingDlgVector;
 vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
+vector<string> friendVector;
 HWND hChatLobbyDlg;
 char inputFriendId[PACKET_SIZE];
 char inputRoomName[PACKET_SIZE];
@@ -18,6 +19,7 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 	{
 	case WM_INITDIALOG:
 		ChattingLobbyInit(hDlg);
+		FriendListInit(hDlg);
 		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
@@ -79,7 +81,7 @@ unsigned __stdcall RecvMessageThread(void* arg)
 				break;
 			}
 
-			// 친구목록 업데이트
+			friendVector.emplace_back(recvJson["friendId"].asString());
 			MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
 			break;
 		case AddChattingRoom:
@@ -87,6 +89,9 @@ unsigned __stdcall RecvMessageThread(void* arg)
 			break;
 		case AddChattingRoomUser:
 			AddChattingRoomUserMethod(recvJson);
+			break;
+		case GetFriendData:
+			GetFriendDataMethod(recvJson);
 			break;
 		default:
 			break;
@@ -169,6 +174,18 @@ void ChattingLobbyInit(HWND hDlg)
 	_beginthreadex(NULL, 0, RecvMessageThread, NULL, 0, NULL);
 }
 
+void FriendListInit(HWND hDlg)
+{
+	Json::Value sendJson, recvJson;
+	vector<string> chattingRoomNumber;
+	string name;
+
+	//SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
+
+	sendJson["kind"] = GetFriendData;
+	Client::GetInstance()->SendPacketToServer(sendJson);
+}
+
 void AddFriendBtnMethod(HWND hDlg)
 {
 	Json::Value sendJson;
@@ -238,6 +255,17 @@ void AddChattingRoomUserMethod(Json::Value recvJson)
 	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
+}
+
+void GetFriendDataMethod(Json::Value recvJson)
+{
+	stringstream ss(recvJson["friend"].asString());
+	string buffer;
+
+	while (getline(ss, buffer, ','))
+	{
+		friendVector.emplace_back(buffer);
+	}
 }
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
