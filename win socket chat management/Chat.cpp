@@ -7,6 +7,7 @@ using namespace std;
 
 HWND chatDlgHandle;
 char inputFriendIdInChat[PACKET_SIZE];
+extern mutex chattingMutex;
 extern vector<chattingRoomHwnd> chattingDlgVector;
 extern vector<downLoadFileLine> downLoadFileLineVector;
 extern vector<string> friendVector;
@@ -44,6 +45,7 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 		}
 		break;
 	case WM_CLOSE:
+		chattingMutex.lock();
 		for (int i = 0; i < (int)chattingDlgVector.size(); i++)
 		{
 			if (hDlg == chattingDlgVector[i].hwnd)
@@ -53,7 +55,7 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 				break;
 			}
 		}
-		
+		chattingMutex.unlock();
 		EndDialog(hDlg, wParam);
 		return TRUE;
 	}
@@ -65,6 +67,7 @@ void SendMessageToServer(HWND hwnd)
 	char tempChatMessage[PACKET_SIZE];
 	GetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), tempChatMessage, PACKET_SIZE);
 
+	chattingMutex.lock();
 	for (const auto& iterator : chattingDlgVector)
 	{
 		if (iterator.hwnd != hwnd)
@@ -73,6 +76,7 @@ void SendMessageToServer(HWND hwnd)
 		Client::GetInstance()->SendMessageToServer(tempChatMessage, iterator.roomNumber);
 		break;
 	}
+	chattingMutex.unlock();
 
 	SetWindowText(GetDlgItem(hwnd, IDC_EDIT_MESSAGEBOX), "");
 }
@@ -94,6 +98,7 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 		// 리스트박스 파일을 보낸 메시지, (제일 마지막 메시지) 번호를 기억하고 있다가 나중에 사용
 		downLoadFileLineVector.emplace_back(hDlg, (SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0) + 1),
 			value["fileName"].asString());
+
 		break;
 	}
 	
@@ -140,6 +145,7 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 void GetFileDataMethod(HWND hDlg)
 {
 	// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
+	chattingMutex.lock();
 	for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
 	{
 		if (((*iterator).hwnd == hDlg) &&
@@ -157,6 +163,7 @@ void GetFileDataMethod(HWND hDlg)
 				value["roomNumber"] = iterator.roomNumber;
 				break;
 			}
+			chattingMutex.unlock();
 			Client::GetInstance()->SendPacketToServer(value);
 			// 해당 파일 이름 보내달라고 요청
 			return;
@@ -166,6 +173,7 @@ void GetFileDataMethod(HWND hDlg)
 			iterator++;
 		}
 	}
+	chattingMutex.unlock();
 	return;
 }
 
@@ -205,6 +213,7 @@ void SendFileDataBtnMethod(HWND hDlg)
 			root["fileSize"] = (int)fileSize;
 			root["fileName"] = strFileTitle;
 
+			chattingMutex.lock();
 			for (const auto& iterator : chattingDlgVector)
 			{
 				if (iterator.hwnd != hDlg)
@@ -213,6 +222,7 @@ void SendFileDataBtnMethod(HWND hDlg)
 				root["roomNumber"] = iterator.roomNumber;
 				break;
 			}
+			chattingMutex.unlock();
 
 			Client::GetInstance()->SendPacketToServer(root);
 			Client::GetInstance()->SendFileDataToServer(fp, fileSize);
@@ -236,7 +246,8 @@ void AddUserToChatBtnMethod(HWND hDlg)
 	sendValue["addUserId"] = inputFriendIdInChat;
 	GetWindowText(GetDlgItem(hDlg, IDC_STATIC_CHAT_ROOM_NAME), (LPSTR)roomName, PACKET_SIZE);
 	sendValue["roomName"] = roomName;
-	
+
+	chattingMutex.lock();
 	for (const auto& iterator : chattingDlgVector)
 	{
 		if (hDlg == iterator.hwnd)
@@ -245,6 +256,7 @@ void AddUserToChatBtnMethod(HWND hDlg)
 			break;
 		}
 	}
+	chattingMutex.unlock();
 	Client::GetInstance()->SendPacketToServer(sendValue);
 
 	strcpy_s(inputFriendIdInChat, PACKET_SIZE, "");

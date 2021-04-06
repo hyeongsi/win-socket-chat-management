@@ -3,6 +3,7 @@
 #include "Chat.h"
 #include <sstream>
 #include <vector>
+#include <mutex>
 
 typedef struct ChattingRoomHwnd
 {
@@ -38,3 +39,5 @@ void AddChattingRoomBtnMethod(HWND hDlg);
 void AddChattingRoomMethod(Json::Value recvJson);
 void AddChattingRoomUserMethod(Json::Value recvJson);
 void GetFriendDataMethod(Json::Value recvJson);
+void RecvMessageMethod(Json::Value recvJson);
+void AddFriendMethod(Json::Value recvJson);

@@ -5,6 +5,7 @@
 
 using namespace std;
 
+mutex chattingMutex;
 vector<chattingRoomHwnd> chattingDlgVector;
 vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
 vector<string> friendVector;
@@ -61,28 +62,14 @@ unsigned __stdcall RecvMessageThread(void* arg)
 		{
 		case Message:
 		case GetFileRequest:
-			for (const auto& iterator : chattingDlgVector)
-			{
-				if (iterator.roomNumber != recvJson["roomNumber"].asInt())
-					continue;
-
-				SyncChatUI(iterator.hwnd, recvJson);
-				break;
-			}
+			RecvMessageMethod(recvJson);
 			break;
 		case SetFileRequest:
 			if (Client::GetInstance()->RecvFileData(recvJson))
 				MessageBox(hChatLobbyDlg, "파일 저장 완료",("downloadFiles\\" + recvJson["fileName"].asString()).c_str(),0);
 			break;
 		case AddFriend:
-			if (!recvJson["result"].asBool())
-			{
-				MessageBox(hChatLobbyDlg, recvJson["message"].asString().c_str(), "친구추가", 0);
-				break;
-			}
-
-			friendVector.emplace_back(recvJson["friendId"].asString());
-			MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
+			AddFriendMethod(recvJson);
 			break;
 		case AddChattingRoom:
 			AddChattingRoomMethod(recvJson);
@@ -125,7 +112,10 @@ void ChattingLobbyInit(HWND hDlg)
 	hChatLobbyDlg = hDlg;
 
 	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
+
+	chattingMutex.lock();
 	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, 0));
+	chattingMutex.unlock();
 
 	sendJson["kind"] = ChattingRoomInit;
 	Client::GetInstance()->SendPacketToServer(sendJson);
@@ -149,8 +139,9 @@ void ChattingLobbyInit(HWND hDlg)
 
 			SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 				0, (LPARAM)recvJson["roomName"].asString().c_str());
-
-			chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[0])));	// 리스트에 채팅방 번호 저장해서 관리
+			chattingMutex.lock();
+			chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[0])));
+			chattingMutex.unlock();// 리스트에 채팅방 번호 저장해서 관리
 		}
 		else //채팅방 n개 이상 경우
 		{
@@ -164,8 +155,9 @@ void ChattingLobbyInit(HWND hDlg)
 
 				SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 					0, (LPARAM)recvJson["roomName"].asString().c_str());
-
-				chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[i])));	// 리스트에 채팅방 번호 저장해서 관리
+				chattingMutex.lock();
+				chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[i])));
+				chattingMutex.unlock();// 리스트에 채팅방 번호 저장해서 관리
 			}
 		}
 	}
@@ -203,10 +195,15 @@ void ClickChattingRoomMethod(HWND hDlg)
 	string roomName;
 
 	curSelNumber = SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETCURSEL, 0, 0);
-
+	chattingMutex.lock();
 	if (chattingDlgVector[curSelNumber].turnOn)
+	{
+		chattingMutex.unlock();
 		return;
+	}
+	chattingMutex.unlock();
 
+	chattingMutex.lock();
 	chattingDlgVector[curSelNumber].hwnd = 
 		CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_CHATTING), hDlg, ChatDlgProc);
 	chattingDlgVector[curSelNumber].turnOn = true;
@@ -215,6 +212,7 @@ void ClickChattingRoomMethod(HWND hDlg)
 	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_GETTEXT, curSelNumber, (LPARAM)roomName.c_str());
 	SetWindowText(GetDlgItem(chattingDlgVector[curSelNumber].hwnd, IDC_STATIC_CHAT_ROOM_NAME)
 		, roomName.c_str());
+	chattingMutex.unlock();
 	return;
 }
 
@@ -238,9 +236,11 @@ void AddChattingRoomMethod(Json::Value recvJson)
 	if (!recvJson["result"].asBool())
 		return;
 
+	chattingMutex.lock();
 	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
+	chattingMutex.unlock();
 
 	Json::Value sendJson;
 	sendJson["kind"] = AddChattingRoomUser;
@@ -252,9 +252,11 @@ void AddChattingRoomMethod(Json::Value recvJson)
 
 void AddChattingRoomUserMethod(Json::Value recvJson)
 {
+	chattingMutex.lock();
 	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
+	chattingMutex.unlock();
 }
 
 void GetFriendDataMethod(Json::Value recvJson)
@@ -262,10 +264,40 @@ void GetFriendDataMethod(Json::Value recvJson)
 	stringstream ss(recvJson["friend"].asString());
 	string buffer;
 
+	chattingMutex.lock();
 	while (getline(ss, buffer, ','))
 	{
 		friendVector.emplace_back(buffer);
 	}
+	chattingMutex.unlock();
+}
+
+void RecvMessageMethod(Json::Value recvJson)
+{
+	chattingMutex.lock();
+	for (const auto& iterator : chattingDlgVector)
+	{
+		if (iterator.roomNumber != recvJson["roomNumber"].asInt())
+			continue;
+
+		SyncChatUI(iterator.hwnd, recvJson);
+		break;
+	}
+	chattingMutex.unlock();
+}
+
+void AddFriendMethod(Json::Value recvJson)
+{
+	if (!recvJson["result"].asBool())
+	{
+		MessageBox(hChatLobbyDlg, recvJson["message"].asString().c_str(), "친구추가", 0);
+		return;
+	}
+
+	chattingMutex.lock();
+	friendVector.emplace_back(recvJson["friendId"].asString());
+	chattingMutex.unlock();
+	MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
 }
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
