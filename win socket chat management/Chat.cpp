@@ -96,23 +96,45 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 			value["fileName"].asString());
 		break;
 	}
+	
+	int count = 0;
+	for (int i = 0; message.c_str()[i]; i++)
+	{
+		if (message.c_str()[i] >> 7)
+			i++;
+		count++;
+	}
 
-	SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_ADDSTRING, 0,
-		(LPARAM)TEXT(
-			(message).c_str()));
+	const int subStrSize = 20;
+	string substrString;
+	if (count > subStrSize)
+	{
+		for (int i = 0; message.c_str()[i]; i++)
+		{
+			if (message.c_str()[i] >> 7)
+			{
+				substrString += message.c_str()[i];
+				i++;
+			}
 
-	// 특정 글자 수에 따라서 줄바꿈 구현 하려 하는데, 한글이 자를 때 짤리거나 하는 것 때문에
-	// 잠시 보류, 찾아보니까 for문 돌려서 if(char & 0x80) 로 한글 확인해서 처리하던데.. 이해가 안됨. 일단 보류
+			substrString += message.c_str()[i];
 
-	/*do
+			if (((substrString.size() / subStrSize) > 1) || (!message.c_str()[i+1]))
+			{
+				SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_ADDSTRING, 0,
+					(LPARAM)TEXT(
+						substrString.c_str()));
+
+				substrString.clear();
+			}
+		}
+	}
+	else
 	{
 		SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_ADDSTRING, 0,
-			(LPARAM)TEXT(
-				(message.substr(i * substrSize, substrSize)).c_str()));
-
-		i++;
-	} while (i < message.size() / substrSize);*/
-
+		(LPARAM)TEXT(
+			(message).c_str()));
+	}
 }
 
 void GetFileDataMethod(HWND hDlg)
