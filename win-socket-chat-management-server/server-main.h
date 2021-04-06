@@ -38,6 +38,13 @@ enum SignUpMessage
 	ExsistsSameName,
 };
 
+enum EmoticonKind
+{
+	Happy,
+	Sad,
+	Surprised,
+};
+
 enum MessageKind
 {
 	SignUp,
@@ -97,6 +104,7 @@ void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOC
 void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket);
 void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket);
 void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket);
+void EmoticonMessageMethod(Json::Value recvValue, Json::Value sendValue, string* userName, SOCKET* clientSocket);
 
 void ExitClient(SOCKET* clientSocket);
 

@@ -10,6 +10,8 @@
 #define IDD_DIALOG_INPUT_ID             109
 #define IDD_DIALOG_INPUT_ROOMNAME       110
 #define IDD_DIALOG_ADD_CHAT_USER        111
+#define IDD_DIALOG_ADD_CHAT_USER1       112
+#define IDD_DIALOG_INPUT_EMOTICON       112
 #define ID_LOGIN_BTN                    1001
 #define ID_GOTO_SIGNUP_BTN              1002
 #define IDC_STATIC_ID                   1005
@@ -56,7 +58,7 @@
 #define IDC_ADD_USER_BTN                1031
 #define IDC_EDIT_INPUT_ROOMNAME         1031
 #define IDC_ADD_FRIEND_LIST             1032
-#define IDC_LIST1                       1036
+#define IDC_EMOTICON_LIST               1037
 
 // Next default values for new objects
 // 
@@ -64,7 +66,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

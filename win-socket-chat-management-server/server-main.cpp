@@ -136,6 +136,7 @@ unsigned WINAPI RecvThread(void* arg)
 			GetFileRequestMessageMethod(recvValue, &userName, &clientSocket);
 			break;
 		case Emoticon:
+			EmoticonMessageMethod(recvValue, sendValue, &userName, &clientSocket);
 			break;
 		default:
 			return 0;
@@ -790,6 +791,48 @@ void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSo
 
 		row.clear();
 		loadTextIterator++;
+	}
+}
+
+void EmoticonMessageMethod(Json::Value recvValue, Json::Value sendValue, string* userName, SOCKET* clientSocket)
+{
+	sendValue["kind"] = Message;
+	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
+	sendValue["name"] = *userName;
+
+	switch (recvValue["emoticon"].asInt())
+	{
+	case Happy:
+		sendValue["message"] = "    :-)";
+		break;
+	case Sad:
+		sendValue["message"] = "    :-(";
+		break;
+	case Surprised:
+		sendValue["message"] = "    :-O";
+		break;
+	default:
+		break;
+	}
+
+	if (0 == recvValue["roomNumber"].asInt())
+	{
+		clientSocketListMutex.lock();
+		for (const auto& iterator : clientSocketList)
+		{
+			SendJsonData(sendValue, iterator.socket);
+		}
+		clientSocketListMutex.unlock();
+		return;
+	}
+
+	for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
+	{
+		if (iterator->GetChattingRoomNumber() != recvValue["roomNumber"].asInt())
+			continue;
+
+		iterator->SendChatting(sendValue);
+		break;
 	}
 }
 

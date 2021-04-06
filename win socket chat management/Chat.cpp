@@ -7,6 +7,7 @@ using namespace std;
 
 HWND chatDlgHandle;
 char inputFriendIdInChat[PACKET_SIZE];
+int selectEmoticon = -1;
 extern mutex chattingMutex;
 extern vector<chattingRoomHwnd> chattingDlgVector;
 extern vector<downLoadFileLine> downLoadFileLineVector;
@@ -41,6 +42,9 @@ BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam
 			break;
 		case IDC_ADD_USER_BTN:
 			AddUserToChatBtnMethod(hDlg);
+			break;
+		case IDC_EMOTICON_BTN:
+			EmoticonBtnMethod(hDlg);
 			break;
 		}
 		break;
@@ -262,6 +266,30 @@ void AddUserToChatBtnMethod(HWND hDlg)
 	strcpy_s(inputFriendIdInChat, PACKET_SIZE, "");
 }
 
+void EmoticonBtnMethod(HWND hDlg)
+{
+	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_EMOTICON), hDlg, InputEmoticonDlgProc);
+	if (-1 == selectEmoticon)
+		return;
+
+	Json::Value sendValue;
+	sendValue["kind"] = Emoticon;
+	sendValue["emoticon"] = selectEmoticon;
+
+	chattingMutex.lock();
+	for (const auto& iterator : chattingDlgVector)
+	{
+		if (iterator.hwnd != hDlg)
+			continue;
+
+		sendValue["roomNumber"] = iterator.roomNumber;
+		break;
+	}
+	chattingMutex.unlock();
+
+	Client::GetInstance()->SendPacketToServer(sendValue);
+}
+
 BOOL CALLBACK AddFriendInChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch (iMessage)
@@ -284,6 +312,39 @@ BOOL CALLBACK AddFriendInChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LP
 			return TRUE;
 		case IDCANCEL:
 			strcpy_s(inputFriendIdInChat, PACKET_SIZE, "");
+			EndDialog(hDlg, wParam);
+			return FALSE;
+		}
+
+		break;
+	case WM_CLOSE:
+		EndDialog(hDlg, wParam);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL CALLBACK InputEmoticonDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (iMessage)
+	{
+	case WM_INITDIALOG:
+		SendMessage(GetDlgItem(hDlg, IDC_EMOTICON_LIST), LB_ADDSTRING, 0,
+			(LPARAM)"happy");
+		SendMessage(GetDlgItem(hDlg, IDC_EMOTICON_LIST), LB_ADDSTRING, 0,
+			(LPARAM)"sad");
+		SendMessage(GetDlgItem(hDlg, IDC_EMOTICON_LIST), LB_ADDSTRING, 0,
+			(LPARAM)"surprised");
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			selectEmoticon = SendMessage(GetDlgItem(hDlg, IDC_EMOTICON_LIST), LB_GETCURSEL, 0, 0);
+			EndDialog(hDlg, wParam);
+			return TRUE;
+		case IDCANCEL:
+			selectEmoticon = -1;
 			EndDialog(hDlg, wParam);
 			return FALSE;
 		}
