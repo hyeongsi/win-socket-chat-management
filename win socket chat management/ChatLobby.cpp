@@ -180,13 +180,19 @@ void FriendListInit(HWND hDlg)
 
 void AddFriendBtnMethod(HWND hDlg)
 {
+	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc);
+
+	if (strcmp(inputFriendId, "") == 0)
+		return;
+
 	Json::Value sendJson;
 
 	sendJson["kind"] = AddFriend;
-	DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_INPUT_ID), hDlg, InputIDDlgProc);
 
 	sendJson["friendId"] = inputFriendId;
 	Client::GetInstance()->SendPacketToServer(sendJson);
+
+	strcpy_s(inputFriendId, PACKET_SIZE, "");
 }
 
 void ClickChattingRoomMethod(HWND hDlg)
@@ -312,6 +318,7 @@ BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lPa
 			EndDialog(hDlg, wParam);
 			return TRUE;
 		case IDCANCEL:
+			strcpy_s(inputFriendId, PACKET_SIZE, "");
 			EndDialog(hDlg, wParam);
 			return FALSE;
 		}
