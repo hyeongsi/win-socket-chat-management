@@ -9,6 +9,7 @@ mutex chattingMutex;
 vector<chattingRoomHwnd> chattingDlgVector;
 vector<downLoadFileLine> downLoadFileLineVector;	// 파일 다운로드 라인 저장 변수
 vector<string> friendVector;
+bool isFriendList = false;
 HWND hChatLobbyDlg;
 char inputFriendId[PACKET_SIZE];
 char inputRoomName[PACKET_SIZE];
@@ -38,6 +39,12 @@ BOOL CALLBACK ChatLobbyDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM l
 			break;
 		case IDC_ADD_CHATTING_ROOM_BTN:
 			AddChattingRoomBtnMethod(hDlg);
+			break;
+		case IDC_FRIEND_BTN:
+			FriendBtnMethod(hDlg);
+			break;
+		case IDC_CHAT_BTN2:
+			ChatBtnMethod(hDlg);
 			break;
 		}
 		break;
@@ -114,7 +121,7 @@ void ChattingLobbyInit(HWND hDlg)
 	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)"메인 채팅방");
 
 	chattingMutex.lock();
-	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, 0));
+	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, 0, "메인 채팅방"));
 	chattingMutex.unlock();
 
 	sendJson["kind"] = ChattingRoomInit;
@@ -140,7 +147,8 @@ void ChattingLobbyInit(HWND hDlg)
 			SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 				0, (LPARAM)recvJson["roomName"].asString().c_str());
 			chattingMutex.lock();
-			chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[0])));
+			chattingDlgVector.emplace_back(
+				chattingRoomHwnd(NULL, stoi(chattingRoomNumber[0]), recvJson["roomName"].asString()));
 			chattingMutex.unlock();// 리스트에 채팅방 번호 저장해서 관리
 		}
 		else //채팅방 n개 이상 경우
@@ -156,7 +164,8 @@ void ChattingLobbyInit(HWND hDlg)
 				SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 					0, (LPARAM)recvJson["roomName"].asString().c_str());
 				chattingMutex.lock();
-				chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, stoi(chattingRoomNumber[i])));
+				chattingDlgVector.emplace_back(
+					chattingRoomHwnd(NULL, stoi(chattingRoomNumber[i]), recvJson["roomName"].asString()));
 				chattingMutex.unlock();// 리스트에 채팅방 번호 저장해서 관리
 			}
 		}
@@ -197,6 +206,9 @@ void AddFriendBtnMethod(HWND hDlg)
 
 void ClickChattingRoomMethod(HWND hDlg)
 {
+	if (isFriendList)
+		return;
+
 	int curSelNumber = 0;
 	string roomName;
 
@@ -237,13 +249,46 @@ void AddChattingRoomBtnMethod(HWND hDlg)
 	strcpy_s(inputRoomName, PACKET_SIZE, "");
 }
 
+void FriendBtnMethod(HWND hDlg)
+{
+	if (isFriendList)
+		return;
+
+	isFriendList = true;
+
+	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_RESETCONTENT, 0, 0);
+
+	for (int i = 0; i < friendVector.size(); i++)
+	{
+		SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+			0, (LPARAM)friendVector[i].c_str());
+	}
+}
+
+void ChatBtnMethod(HWND hDlg)
+{
+	if (!isFriendList)
+		return;
+
+	isFriendList = false;
+
+	SendMessage(GetDlgItem(hDlg, IDC_LIST_FRIENDS), LB_RESETCONTENT, 0, 0);
+
+	for (int i = 0; i < chattingDlgVector.size(); i++)
+	{
+		SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
+			0, (LPARAM)chattingDlgVector[i].roomName.c_str());
+	}
+}
+
 void AddChattingRoomMethod(Json::Value recvJson)
 {
 	if (!recvJson["result"].asBool())
 		return;
 
 	chattingMutex.lock();
-	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
+	chattingDlgVector.emplace_back(
+		chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt(), recvJson["roomName"].asString()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
 	chattingMutex.unlock();
@@ -259,7 +304,8 @@ void AddChattingRoomMethod(Json::Value recvJson)
 void AddChattingRoomUserMethod(Json::Value recvJson)
 {
 	chattingMutex.lock();
-	chattingDlgVector.emplace_back(chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt()));
+	chattingDlgVector.emplace_back(
+		chattingRoomHwnd(NULL, recvJson["roomNumber"].asInt(), recvJson["roomName"].asString()));
 	SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING,
 		0, (LPARAM)recvJson["roomName"].asString().c_str());
 	chattingMutex.unlock();
@@ -304,6 +350,11 @@ void AddFriendMethod(Json::Value recvJson)
 	friendVector.emplace_back(recvJson["friendId"].asString());
 	chattingMutex.unlock();
 	MessageBox(hChatLobbyDlg, "친구추가 성공", "친구추가", 0);
+
+	if (isFriendList)
+	{
+		SendMessage(GetDlgItem(hChatLobbyDlg, IDC_LIST_FRIENDS), LB_ADDSTRING, 0, (LPARAM)recvJson["friendId"].asString().c_str());
+	}
 }
 
 BOOL CALLBACK InputIDDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)

@@ -341,7 +341,6 @@ void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket)
 		MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH, writeData);
 		writeData.clear();
 		writeData.emplace_back(recvValue["id"].asString());
-		writeData.emplace_back("1");
 		MembershipDB::GetInstance()->WriteDataToCsv(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH, writeData);
 		DebugLogUpdate(logBox, "회원가입 성공");
 		// db에 데이터 저장;
@@ -513,12 +512,20 @@ void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clien
 			count++;
 		}
 
+		vector<string> fixedRow;
 		vector<string> row = MembershipDB::GetInstance()->Split(iterator, ',');
-		if (row[0] == *userId)
+
+		for (int i = 0; i < row.size(); i++)
 		{
-			for (int i = 1; i < row.size(); i++)
+			if (row[i] != "")
+				fixedRow.emplace_back(row[i]);
+		}
+
+		if (fixedRow[0] == *userId)
+		{
+			for (int i = 1; i < fixedRow.size(); i++)
 			{
-				if (row[i] == recvValue["friendId"].asString())
+				if (fixedRow[i] == recvValue["friendId"].asString())
 				{
 					isExistValue = true;
 					break;
@@ -526,11 +533,12 @@ void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clien
 			}
 
 			if(!isExistValue)
-				row.emplace_back(recvValue["friendId"].asString());
+				fixedRow.emplace_back(recvValue["friendId"].asString());
 		}
 
+
 		MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->FRIEND_LIST_PATH,
-			row);
+			fixedRow);
 	}
 
 	if (isExistValue)

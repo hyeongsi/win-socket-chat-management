@@ -9,8 +9,11 @@ typedef struct ChattingRoomHwnd
 {
 	HWND hwnd = NULL;
 	int roomNumber;
+	std::string roomName;
 	bool turnOn = false;
 	ChattingRoomHwnd(HWND _hwnd, int _roomNumber) : hwnd(_hwnd), roomNumber(_roomNumber) {};
+	ChattingRoomHwnd(HWND _hwnd, int _roomNumber, std::string _roomName)
+		: hwnd(_hwnd), roomNumber(_roomNumber), roomName(_roomName) {};
 }chattingRoomHwnd;
 
 typedef struct DownLoadFileLine
@@ -36,6 +39,9 @@ void FriendListInit(HWND hDlg);
 void AddFriendBtnMethod(HWND hDlg);
 void ClickChattingRoomMethod(HWND hDlg);
 void AddChattingRoomBtnMethod(HWND hDlg);
+void FriendBtnMethod(HWND hDlg);
+void ChatBtnMethod(HWND hDlg);
+
 void AddChattingRoomMethod(Json::Value recvJson);
 void AddChattingRoomUserMethod(Json::Value recvJson);
 void GetFriendDataMethod(Json::Value recvJson);
