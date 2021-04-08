@@ -108,10 +108,10 @@ void ServerUI::CheckConnectUserBtnMethod()
     SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("모든 사용자"));// 텍스트 수정
     SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// 기존 데이터 삭제
 
-    //clientSocketListMutex.lock();
+    Server::GetInstance()->clientSocketListMutex.lock();
     for (auto& connectUser : Server::GetInstance()->clientSocketList)
         DebugLogUpdate(userBox, "id : " + connectUser.id + " name : " + connectUser.name);
-    //clientSocketListMutex.unlock();
+    Server::GetInstance()->clientSocketListMutex.unlock();
 }
 
 void ServerUI::CheckUserIdListBtnMethod()
