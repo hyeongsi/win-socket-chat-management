@@ -40,25 +40,25 @@ enum SignUpMessage
 
 enum EmoticonKind
 {
-	Happy,
-	Sad,
-	Surprised,
+	Happy = 0,
+	Sad = 1,
+	Surprised = 2,
 };
 
 enum MessageKind
 {
-	SignUp,
-	Login,
-	ChattingRoomInit,
-	AddChattingRoom,
-	AddChattingRoomUser,
-	GetChattringRoomName,
-	GetFriendData,
-	Message,
-	GetFileRequest,
-	SetFileRequest,
-	Emoticon,
-	AddFriend,
+	SignUp = 0,
+	Login = 1,
+	ChattingRoomInit = 2,
+	AddChattingRoom = 3,
+	AddChattingRoomUser = 4,
+	GetChattringRoomName = 5,
+	GetFriendData = 6,
+	Message = 7,
+	GetFileRequest = 8,
+	SetFileRequest = 9,
+	Emoticon = 10,
+	AddFriend = 11,
 };
 
 constexpr const int PACKET_SIZE = 1024;

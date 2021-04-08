@@ -7,18 +7,18 @@
 
 enum MessageKind
 {
-	SignUp,
-	Login,
-	ChattingRoomInit,
-	AddChattingRoom,
-	AddChattingRoomUser,
-	GetChattringRoomName,
-	GetFriendData,
-	Message,
-	GetFileRequest,
-	SetFileRequest,
-	Emoticon,
-	AddFriend,
+	SignUp = 0,
+	Login = 1,
+	ChattingRoomInit = 2,
+	AddChattingRoom = 3,
+	AddChattingRoomUser = 4,
+	GetChattringRoomName = 5,
+	GetFriendData = 6,
+	Message = 7,
+	GetFileRequest = 8,
+	SetFileRequest = 9,
+	Emoticon = 10,
+	AddFriend = 11,
 };
 
 constexpr const int PACKET_SIZE = 1024;

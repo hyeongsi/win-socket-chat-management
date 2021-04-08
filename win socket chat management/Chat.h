@@ -8,9 +8,9 @@ extern HWND g_hDlg;
 
 enum EmoticonKind
 {
-	Happy,
-	Sad,
-	Surprised,
+	Happy = 0,
+	Sad = 1,
+	Surprised = 2,
 };
 
 BOOL CALLBACK ChatDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);

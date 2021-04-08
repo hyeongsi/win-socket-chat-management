@@ -18,17 +18,17 @@ typedef struct UserInfo
 }userInfo;
 enum MembershipKey
 {
-	ID,
-	PW,
-	NAME,
+	ID = 0,
+	PW = 1,
+	NAME = 2,
 };
 
 enum LoginFailed
 {
-	LoginSuccess,
-	WrongIdOrPassword,
-	Cancel,
-	Ban,
+	LoginSuccess = 0,
+	WrongIdOrPassword = 1,
+	Cancel = 2,
+	Ban = 3,
 };
 
 class MembershipDB

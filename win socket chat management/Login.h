@@ -5,10 +5,10 @@
 
 enum LoginFailed
 {
-	LoginSuccess,
-	WrongIdOrPassword,
-	Cancel,
-	Ban,
+	LoginSuccess = 0,
+	WrongIdOrPassword = 1,
+	Cancel = 2,
+	Ban = 3,
 };
 
 Json::Value LoginCheck(std::string id, std::string pw);

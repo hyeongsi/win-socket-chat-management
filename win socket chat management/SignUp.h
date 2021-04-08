@@ -5,7 +5,7 @@
 enum SignUpMessage
 {
 	ExsistsSameId = 1,
-	ExsistsSameName,
+	ExsistsSameName = 2,
 };
 
 constexpr const int ipEditboxCharSize = 30;
