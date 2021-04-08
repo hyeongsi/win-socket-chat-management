@@ -1,5 +1,5 @@
 id,friend
-test,test2
+test,test2,test3,aa,hh
 test2,test,test3,test4,cc
 ban
 test3
@@ -10,3 +10,6 @@ aa,dd
 bb
 cc
 dd
+gg
+zz
+hh

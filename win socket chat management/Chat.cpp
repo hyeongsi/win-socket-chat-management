@@ -100,9 +100,8 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 		message = value["message"].asString();
 
 		// 리스트박스 파일을 보낸 메시지, (제일 마지막 메시지) 번호를 기억하고 있다가 나중에 사용
-		downLoadFileLineVector.emplace_back(hDlg, (SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0) + 1),
-			value["fileName"].asString());
-
+		downLoadFileLineVector.emplace_back((SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0) + 1),
+			value["fileName"].asString(), value["roomNumber"].asInt());
 		break;
 	}
 	
@@ -116,7 +115,7 @@ void SyncChatUI(HWND hDlg, Json::Value value)
 
 	const int subStrSize = 20;
 	string substrString;
-	if (count > subStrSize)
+	if ((count > subStrSize) && (value["kind"].asInt() != GetFileRequest))
 	{
 		for (int i = 0; message.c_str()[i]; i++)
 		{
@@ -150,23 +149,39 @@ void GetFileDataMethod(HWND hDlg)
 {
 	// for 돌아서 값중에 인덱스 맞는게 있으면, 서버로 파일좀 보내줘 요청한다음에 파일 받기 실행,
 	chattingMutex.lock();
-	for (auto iterator = downLoadFileLineVector.begin(); iterator != downLoadFileLineVector.end();)
+
+	Json::Value value;
+	bool isCollectRoom = false;
+	
+	for (auto fileIterator = downLoadFileLineVector.begin(); fileIterator != downLoadFileLineVector.end();)
 	{
-		if (((*iterator).hwnd == hDlg) &&
-			((*iterator).line == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCOUNT, 0, 0)))
-		{	// 로그 클릭 시 파일 업로드 메시지를 클릭했는지 체크하고, 해당 메시지 클릭 시 파일 다운로드 진행
-			Json::Value value;
-			value["kind"] = GetFileRequest;
-			value["fileName"] = (*iterator).fileName;
+		for (const auto& iterator : chattingDlgVector)
+		{
+			if (iterator.hwnd != hDlg)
+				continue;
 
-			for (const auto& iterator : chattingDlgVector)
+			if ((*fileIterator).roomNumber == iterator.roomNumber)
 			{
-				if (iterator.hwnd != hDlg)
-					continue;
-
+				isCollectRoom = true;
 				value["roomNumber"] = iterator.roomNumber;
 				break;
 			}
+		}
+
+		if (!isCollectRoom)
+		{
+			chattingMutex.unlock();
+			return;
+		}
+
+		if (
+			((*fileIterator).line-1) == SendMessage(GetDlgItem(hDlg, IDC_LIST_CHAT_LOG), LB_GETCURSEL, 0, 0)
+			)
+		{	// 로그 클릭 시 파일 업로드 메시지를 클릭했는지 체크하고, 해당 메시지 클릭 시 파일 다운로드 진행
+			Json::Value value;
+			value["kind"] = GetFileRequest;
+			value["fileName"] = (*fileIterator).fileName;
+
 			chattingMutex.unlock();
 			Client::GetInstance()->SendPacketToServer(value);
 			// 해당 파일 이름 보내달라고 요청
@@ -174,7 +189,7 @@ void GetFileDataMethod(HWND hDlg)
 		}
 		else
 		{
-			iterator++;
+			fileIterator++;
 		}
 	}
 	chattingMutex.unlock();

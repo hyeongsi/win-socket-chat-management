@@ -18,10 +18,11 @@ typedef struct ChattingRoomHwnd
 
 typedef struct DownLoadFileLine
 {
-	HWND hwnd;
 	int line;
 	std::string fileName;
-	DownLoadFileLine(HWND _hwnd, int _line, std::string _fileName) : hwnd(_hwnd), line(_line), fileName(_fileName) {};
+	int roomNumber;
+	DownLoadFileLine(int _line, std::string _fileName, int _roomNumber) 
+		: line(_line), fileName(_fileName), roomNumber(_roomNumber) {};
 }downLoadFileLine;
 
 extern HINSTANCE g_hInst;

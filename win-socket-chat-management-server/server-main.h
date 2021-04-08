@@ -18,8 +18,8 @@ const char* SAVE_LOG_PATH = "saveLog\\serverLogData.csv";
 
 enum listboxKind
 {
-	userBox,
-	logBox,
+	userBox = 0,
+	logBox = 1,
 };
 
 typedef struct UserDatas
@@ -33,9 +33,9 @@ typedef struct UserDatas
 
 enum SignUpMessage
 {
-	Success,
-	ExsistsSameId,
-	ExsistsSameName,
+	Success = 0,
+	ExsistsSameId = 1, 
+	ExsistsSameName = 2,
 };
 
 enum EmoticonKind

@@ -37,8 +37,11 @@ std::string GetDlgItemString(HWND hwnd)
 
 void SignUpOkBtnMethod(HWND hDlg, WPARAM wParam)
 {
-	if (!(ConnectServer(GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_IP)),
-		GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_PORT)))))
+	if ( 
+		!(ConnectServer(GetDlgItemString(GetDlgItem(hDlg, IDC_EDIT_SIGNUP_IP)),
+		GetDlgItemString(
+			GetDlgItem(hDlg, IDC_EDIT_SIGNUP_PORT)
+		))))
 	{
 		MessageBox(hDlg, "서버 연결 실패", "로그인 오류", NULL);
 		return;

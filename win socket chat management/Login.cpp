@@ -22,8 +22,9 @@ bool ConnectServer(string ip, string port)
 		if (!(Client::GetInstance()->ConnectInit(ip, stoi(port))))	// 연결 실패 시
 			return false;
 	}
-	catch (const std::exception&)
+	catch (const std::exception& a)
 	{
+		printf("%s", a.what());
 		return false;
 	}
 	
