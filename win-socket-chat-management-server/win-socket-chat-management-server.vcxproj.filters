@@ -30,6 +30,18 @@
     <ClInclude Include="ChattingRoomManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerUIEnumCollection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerEnumCollection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="win-socket-chat-management-server.rc">
@@ -47,6 +59,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ChattingRoomManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

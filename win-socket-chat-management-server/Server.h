@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <WinSock2.h>
 #include <list>
 #include <string>
@@ -53,18 +53,18 @@ private:
 	string JsonToString(Json::Value value);	// json -> string
 	bool SendJsonData(Json::Value value, SOCKET socket); // json send socket
 	bool SendFileDataFromServer(FILE* fp, int fileSize, SOCKET socket); //file data send socket
-	void ExitClient(SOCKET* clientSocket); // client socket Á¾·á Ã³¸®
+	void ExitClient(SOCKET* clientSocket); // client socket ì¢…ë£Œ ì²˜ë¦¬
 
-	void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket); // È¸¿ø°¡ÀÔ Ã³¸®
-	void LoginMessageMethod(Json::Value recvValue, string* userId, string* userName, SOCKET* clientSocket); // ·Î±×ÀÎ Ã³¸®
-	void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket); // Ã¤ÆÃ¹æ ÃÊ±âÈ­
-	void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket); // Ã¤ÆÃ¹æ Ãß°¡
-	void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket); // Ã¤ÆÃ¹æ¿¡ À¯Àú Ãß°¡
-	void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket); // Ã¤ÆÃ¹æÀÌ¸§ Àü¼Û
-	void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket); // Ä£±¸ µ¥ÀÌÅÍ Àü¼Û
-	void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName); // ¸Ş½ÃÁö Àü¼Û
-	void SetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket); // ÆÄÀÏ µ¥ÀÌÅÍ ¼ö½Å
-	void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clientSocket); // Ä£±¸ Ãß°¡
-	void GetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket); // ÆÄÀÏ µ¥ÀÌÅÍ ¼Û½Å
-	void EmoticonMessageMethod(Json::Value recvValue, Json::Value sendValue, string* userName, SOCKET* clientSocket); // ÀÌ¸ğÆ¼ÄÜ Ã³¸®
+	void SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket); // íšŒì›ê°€ì… ì²˜ë¦¬
+	void LoginMessageMethod(Json::Value recvValue, string* userId, string* userName, SOCKET* clientSocket); // ë¡œê·¸ì¸ ì²˜ë¦¬
+	void ChattingRoomInitMethod(Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket); // ì±„íŒ…ë°© ì´ˆê¸°í™”
+	void AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket); // ì±„íŒ…ë°© ì¶”ê°€
+	void AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket); // ì±„íŒ…ë°©ì— ìœ ì € ì¶”ê°€
+	void GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket); // ì±„íŒ…ë°©ì´ë¦„ ì „ì†¡
+	void GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* clientSocket); // ì¹œêµ¬ ë°ì´í„° ì „ì†¡
+	void JsonMessageMethod(Json::Value recvValue, string* userId, string* userName); // ë©”ì‹œì§€ ì „ì†¡
+	void SetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket); // íŒŒì¼ ë°ì´í„° ìˆ˜ì‹ 
+	void AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKET* clientSocket); // ì¹œêµ¬ ì¶”ê°€
+	void GetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket); // íŒŒì¼ ë°ì´í„° ì†¡ì‹ 
+	void EmoticonMessageMethod(Json::Value recvValue, Json::Value sendValue, string* userName, SOCKET* clientSocket); // ì´ëª¨í‹°ì½˜ ì²˜ë¦¬
 };

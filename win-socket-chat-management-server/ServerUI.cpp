@@ -1,4 +1,4 @@
-#include "ServerUI.h"
+ï»¿#include "ServerUI.h"
 #include "Server.h"
 
 ServerUI* ServerUI::instance = nullptr;
@@ -47,7 +47,7 @@ string ServerUI::GetUserIdInUserList()
         SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_GETCURSEL, 0, 0),
         (LPARAM)tempChatMessage);
     strcat(tempChatMessage, "\0");
-    //¼±ÅÃÁßÀÎ ÀÎµ¦½º ¹®ÀÚ °¡Á®¿È
+    //ì„ íƒì¤‘ì¸ ì¸ë±ìŠ¤ ë¬¸ì ê°€ì ¸ì˜´
 
     return tempChatMessage;
 }
@@ -89,7 +89,7 @@ void ServerUI::InitDialogMethod(HWND hDlg)
     g_hDlg = hDlg;
 
     SetWindowPos(hDlg, HWND_TOP, 200, 100, 0, 0, SWP_NOSIZE);
-    // È­¸é »ı¼º À§Ä¡ ¼³Á¤
+    // í™”ë©´ ìƒì„± ìœ„ì¹˜ ì„¤ì •
 
     if (0 != WSAStartup(MAKEWORD(2, 2), &Server::GetInstance()->wsaData))
     {
@@ -97,16 +97,16 @@ void ServerUI::InitDialogMethod(HWND hDlg)
         return;
     }
 
-    // ip, port UI Ãâ·Â
+    // ip, port UI ì¶œë ¥
     SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MY_IP), GetMyIP().c_str());
     SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MY_PORT), to_string(PORT).c_str());
 }
 
 void ServerUI::CheckConnectUserBtnMethod()
 {
-    SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));	// ÅØ½ºÆ® ¼öÁ¤
-    SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("¸ğµç »ç¿ëÀÚ"));// ÅØ½ºÆ® ¼öÁ¤
-    SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// ±âÁ¸ µ¥ÀÌÅÍ »èÁ¦
+    SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));	// í…ìŠ¤íŠ¸ ìˆ˜ì •
+    SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("ëª¨ë“  ì‚¬ìš©ì"));// í…ìŠ¤íŠ¸ ìˆ˜ì •
+    SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);	// ê¸°ì¡´ ë°ì´í„° ì‚­ì œ
 
     Server::GetInstance()->clientSocketListMutex.lock();
     for (auto& connectUser : Server::GetInstance()->clientSocketList)
@@ -116,8 +116,8 @@ void ServerUI::CheckConnectUserBtnMethod()
 
 void ServerUI::CheckUserIdListBtnMethod()
 {
-    SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("Á¢¼ÓÀÚ"));	// ÅØ½ºÆ® ¼öÁ¤
-    SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));// ÅØ½ºÆ® ¼öÁ¤
+    SendMessage(GetDlgItem(g_hDlg, ID_CONNECT_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("ì ‘ì†ì"));	// í…ìŠ¤íŠ¸ ìˆ˜ì •
+    SendMessage(GetDlgItem(g_hDlg, ID_USER_CHECK_BTN), WM_SETTEXT, 0, (LPARAM)("v"));// í…ìŠ¤íŠ¸ ìˆ˜ì •
     SendMessage(GetDlgItem(g_hDlg, IDC_USERS_LIST), LB_RESETCONTENT, 0, 0);
 
     for (auto& userInfo : MembershipDB::GetInstance()->GetUserInfoList())
@@ -139,9 +139,9 @@ void ServerUI::DebugLogUpdate(int kind, string message)
     case logBox:
         listBox = GetDlgItem(g_hDlg, IDC_LOG_LIST);
 
-        logMessage = to_string(1900 + localTime.tm_year) + "³â" + to_string(localTime.tm_mon) + "¿ù"
-            + to_string(localTime.tm_mday) + "ÀÏ" + to_string(localTime.tm_hour) + "½Ã"
-            + to_string(localTime.tm_min) + "ºĞ" + to_string(localTime.tm_sec) + "ÃÊ" + " / " + message;
+        logMessage = to_string(1900 + localTime.tm_year) + "ë…„" + to_string(localTime.tm_mon) + "ì›”"
+            + to_string(localTime.tm_mday) + "ì¼" + to_string(localTime.tm_hour) + "ì‹œ"
+            + to_string(localTime.tm_min) + "ë¶„" + to_string(localTime.tm_sec) + "ì´ˆ" + " / " + message;
         break;
     default:
         return;
@@ -159,18 +159,18 @@ void ServerUI::BanBtnMethod()
 
     vector<string> getUserIdData;
 
-    getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id ÀúÀå
+    getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id ì €ì¥
     if (MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
         ID, getUserIdData[0]) >= 0)
     {
-        MessageBox(g_hDlg, (getUserIdData[0] + " ¹ê ½ÇÆĞ µ¿ÀÏÇÑ id°¡ ÀÌ¹Ì ¹ê »óÅÂÀÔ´Ï´Ù.").c_str(), 0, 0);
+        MessageBox(g_hDlg, (getUserIdData[0] + " ë°´ ì‹¤íŒ¨ ë™ì¼í•œ idê°€ ì´ë¯¸ ë°´ ìƒíƒœì…ë‹ˆë‹¤.").c_str(), 0, 0);
         return;
     }
 
     if (MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->BAN_USER_PATH, getUserIdData))
-        MessageBox(g_hDlg, (getUserIdData[0] + " ¹ê ¼º°ø").c_str(), 0, 0);
+        MessageBox(g_hDlg, (getUserIdData[0] + " ë°´ ì„±ê³µ").c_str(), 0, 0);
     else
-        MessageBox(g_hDlg, (getUserIdData[0] + " ¹ê ½ÇÆĞ").c_str(), 0, 0);
+        MessageBox(g_hDlg, (getUserIdData[0] + " ë°´ ì‹¤íŒ¨").c_str(), 0, 0);
 }
 
 void ServerUI::UnBanBtnMethod()
@@ -183,7 +183,7 @@ void ServerUI::UnBanBtnMethod()
 
     vector<string> getUserIdData;
 
-    getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id ÀúÀå
+    getUserIdData.emplace_back(MembershipDB::GetInstance()->Split(GetUserIdInUserList(), ' ')[2]);	// id ì €ì¥
     findIdIndex = MembershipDB::GetInstance()->ExistValue(MembershipDB::GetInstance()->BAN_USER_PATH,
         ID, getUserIdData[0], true);
 
@@ -211,11 +211,11 @@ void ServerUI::UnBanBtnMethod()
             MembershipDB::GetInstance()->WriteDataToCsv(MembershipDB::GetInstance()->BAN_USER_PATH, getUserIdData);
         }
 
-        MessageBox(g_hDlg, "¹ê Ãë¼Ò ¼º°ø", 0, 0);
+        MessageBox(g_hDlg, "ë°´ ì·¨ì†Œ ì„±ê³µ", 0, 0);
     }
     else
     {
-        MessageBox(g_hDlg, "¹ê Ãë¼Ò ½ÇÆĞ", 0, 0);
+        MessageBox(g_hDlg, "ë°´ ì·¨ì†Œ ì‹¤íŒ¨", 0, 0);
     }
 }
 
@@ -230,5 +230,5 @@ void ServerUI::SaveServerLogBtnMethod()
         MembershipDB::GetInstance()->WriteDataToCsv(SAVE_LOG_PATH, writeData);
     }
 
-    MessageBox(g_hDlg, "¸ğµç ·Î±×¸¦ ÀúÀåÇß½À´Ï´Ù.", "·Î±×ÀúÀå", 0);
+    MessageBox(g_hDlg, "ëª¨ë“  ë¡œê·¸ë¥¼ ì €ì¥í–ˆìŠµë‹ˆë‹¤.", "ë¡œê·¸ì €ì¥", 0);
 }

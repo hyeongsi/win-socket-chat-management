@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <WinSock2.h>
 #include <string>
 #include <time.h>
@@ -24,17 +24,17 @@ public:
 	static ServerUI* GetInstance();
 	static void ReleaseInstance();
 
-	string GetMyIP();	// ¼­¹ö ÄÄÇ»ÅÍ ip ÃßÃâ
-	string GetUserIdInUserList(); // À¯ÀúÃ¢ÀÇ id°ª ÃßÃâ
-	void MoveScrollbarToEnd(HWND hwnd);	// ½ºÅ©·Ñ¹Ù ÃÖÇÏ´Ü ÀÌµ¿
-	void AdjustListboxHScroll(HWND hwnd);	// Hscroll Å©±â ÀÚµ¿ º¸Á¤
-	void DebugLogUpdate(int kind, string message);	// ·Î±× Ãâ·Â
+	string GetMyIP();	// ì„œë²„ ì»´í“¨í„° ip ì¶”ì¶œ
+	string GetUserIdInUserList(); // ìœ ì €ì°½ì˜ idê°’ ì¶”ì¶œ
+	void MoveScrollbarToEnd(HWND hwnd);	// ìŠ¤í¬ë¡¤ë°” ìµœí•˜ë‹¨ ì´ë™
+	void AdjustListboxHScroll(HWND hwnd);	// Hscroll í¬ê¸° ìë™ ë³´ì •
+	void DebugLogUpdate(int kind, string message);	// ë¡œê·¸ ì¶œë ¥
 
 	void InitDialogMethod(HWND hDlg);
-	void CheckConnectUserBtnMethod();	// ÇöÀç Á¢¼ÓÀÚ È®ÀÎ,Ãâ·Â
-	void CheckUserIdListBtnMethod();	// ¸ğµç »ç¿ëÀÚ È®ÀÎ,Ãâ·Â
-	void BanBtnMethod();	// »ç¿ëÀÚ ¹ê
-	void UnBanBtnMethod();	// »ç¿ëÀÚ ¹ê Ãë¼Ò
-	void SaveServerLogBtnMethod(); // ·Î±× DB¿¡ ÀúÀå
+	void CheckConnectUserBtnMethod();	// í˜„ì¬ ì ‘ì†ì í™•ì¸,ì¶œë ¥
+	void CheckUserIdListBtnMethod();	// ëª¨ë“  ì‚¬ìš©ì í™•ì¸,ì¶œë ¥
+	void BanBtnMethod();	// ì‚¬ìš©ì ë°´
+	void UnBanBtnMethod();	// ì‚¬ìš©ì ë°´ ì·¨ì†Œ
+	void SaveServerLogBtnMethod(); // ë¡œê·¸ DBì— ì €ì¥
 };
 

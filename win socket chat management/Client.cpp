@@ -2,8 +2,6 @@
 
 using namespace std;
 
-extern HWND g_hDlg;
-
 Client* Client::instance = nullptr;
 Client::Client(){ }
 

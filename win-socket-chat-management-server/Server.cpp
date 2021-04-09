@@ -1,4 +1,4 @@
-#include "Server.h"
+ï»¿#include "Server.h"
 #include "ServerUI.h"
 #include "ChattingRoomManager.h"
 #include <process.h>
@@ -51,7 +51,7 @@ bool Server::SendJsonData(Json::Value value, SOCKET socket)
 
 bool Server::SendFileDataFromServer(FILE* fp, int fileSize, SOCKET socket)
 {
-	int sendBytes;	// ÀĞ¾î¿Â ÆÄÀÏ »çÀÌÁî ÀúÀåÇÒ º¯¼ö
+	int sendBytes;	// ì½ì–´ì˜¨ íŒŒì¼ ì‚¬ì´ì¦ˆ ì €ì¥í•  ë³€ìˆ˜
 	char cBuffer[PACKET_SIZE];
 
 	snprintf(cBuffer, sizeof(cBuffer), "%d", fileSize);
@@ -62,7 +62,7 @@ bool Server::SendFileDataFromServer(FILE* fp, int fileSize, SOCKET socket)
 		if (send(socket, cBuffer, sendBytes, 0) == -1)
 		{
 			MessageBox(ServerUI::GetInstance()->g_hDlg, "send error", "error", NULL);
-			// ¼­¹ö ÀçÁ¢¼Ó ÄÚµå ÀÛ¼º
+			// ì„œë²„ ì¬ì ‘ì† ì½”ë“œ ì‘ì„±
 			return false;
 		}
 
@@ -82,7 +82,7 @@ void Server::ExitClient(SOCKET* clientSocket)
 	{
 		if ((*iterator).socket == *clientSocket)
 		{
-			ServerUI::GetInstance()->DebugLogUpdate(logBox, (*iterator).id + "À¯Àú ·Î±×¾Æ¿ô");
+			ServerUI::GetInstance()->DebugLogUpdate(logBox, (*iterator).id + "ìœ ì € ë¡œê·¸ì•„ì›ƒ");
 			clientSocketList.erase(iterator);
 			SendMessage(GetDlgItem(ServerUI::GetInstance()->g_hDlg, IDC_USERS_LIST), LB_DELETESTRING, count, 0);
 			break;
@@ -154,7 +154,7 @@ void Server::StartServerMethod()
 	if (!InitServer())
 		return;
 
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, "¼­¹ö°¡ ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, "ì„œë²„ê°€ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 	isOpenServer = true;
 
 	int clientAddressSize = sizeof(clientAddress);
@@ -260,7 +260,7 @@ void Server::StopServer()
 	closesocket(serverSocket);
 
 	isOpenServer = false;
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, "¼­¹ö°¡ Á¾·áµÇ¾ú½À´Ï´Ù.");
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, "ì„œë²„ê°€ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 void Server::CloseServerSocket()
@@ -275,7 +275,7 @@ void Server::SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket)
 	Json::Value sendValue;
 
 	ServerUI::GetInstance()->DebugLogUpdate(logBox, recvValue["id"].asString() + ", " +
-		recvValue["pw"].asString() + ", " + recvValue["name"].asString() + " È¸¿ø°¡ÀÔ ¿äÃ»");
+		recvValue["pw"].asString() + ", " + recvValue["name"].asString() + " íšŒì›ê°€ì… ìš”ì²­");
 
 	sendValue["value"] = CheckSignUpData(recvValue["id"].asString(),
 		recvValue["pw"].asString(), recvValue["name"].asString());
@@ -294,14 +294,14 @@ void Server::SignUpMessageMethod(Json::Value recvValue, SOCKET* clientSocket)
 		writeData.clear();
 		writeData.emplace_back(recvValue["id"].asString());
 		MembershipDB::GetInstance()->WriteDataToCsv(ChattingRoomManager::GetInstance()->CHATTINGROOM_USER_INFO_PATH, writeData);
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, "È¸¿ø°¡ÀÔ ¼º°ø");
-		// db¿¡ µ¥ÀÌÅÍ ÀúÀå;
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, "íšŒì›ê°€ì… ì„±ê³µ");
+		// dbì— ë°ì´í„° ì €ì¥;
 		SendMessage(GetDlgItem(ServerUI::GetInstance()->g_hDlg, ID_USER_CHECK_BTN), BM_CLICK, 0, 0);
 		sendValue["result"] = true;
 	}
 	else
 	{
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, "È¸¿ø°¡ÀÔ ½ÇÆĞ");
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, "íšŒì›ê°€ì… ì‹¤íŒ¨");
 		sendValue["result"] = false;
 	}
 
@@ -333,7 +333,7 @@ void Server::LoginMessageMethod(Json::Value recvValue, string* userId, string* u
 		clientSocketListMutex.unlock();
 
 		ServerUI::GetInstance()->CheckUserIdListBtnMethod();
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userId + ", " + *userName + " À¯Àú Á¢¼Ó");
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userId + ", " + *userName + " ìœ ì € ì ‘ì†");
 	}
 }
 
@@ -351,7 +351,7 @@ void Server::ChattingRoomInitMethod(Json::Value sendValue, string* userId, strin
 		if (!count)
 		{
 			count++;
-			continue;   // Ã¹ ÁÙ ¹«½Ã
+			continue;   // ì²« ì¤„ ë¬´ì‹œ
 		}
 
 		vector<string> row = MembershipDB::GetInstance()->Split(loadTextIterator, ',');
@@ -374,7 +374,7 @@ void Server::ChattingRoomInitMethod(Json::Value sendValue, string* userId, strin
 		return;
 	}
 
-	// Ã¤ÆÃ¹æ ¿¬°á Ã³¸®
+	// ì±„íŒ…ë°© ì—°ê²° ì²˜ë¦¬
 	for (auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 	{
 		for (auto i = 1; i != copyRoomNumber.size(); i++)
@@ -408,7 +408,7 @@ void Server::ChattingRoomInitMethod(Json::Value sendValue, string* userId, strin
 
 void Server::AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue, string* userId, string* userName, SOCKET* clientSocket)
 {
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, (*userName + "ÀÇ " + recvValue["roomName"].asString() + " Ã¤ÆÃ¹æ »ı¼º ¿äÃ»"));
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, (*userName + "ì˜ " + recvValue["roomName"].asString() + " ì±„íŒ…ë°© ìƒì„± ìš”ì²­"));
 	sendValue["kind"] = AddChattingRoom;
 	clientSocketListMutex.lock();
 	sendValue["result"] = ChattingRoomManager::GetInstance()->AddChattingRoom(recvValue["roomName"].asString(), *userId);
@@ -416,7 +416,7 @@ void Server::AddChattingRoomMethod(Json::Value recvValue, Json::Value sendValue,
 	sendValue["roomNumber"] = ChattingRoomManager::GetInstance()->GetChattingRoomList().back()->GetChattingRoomNumber();
 	clientSocketListMutex.unlock();
 	SendJsonData(sendValue, *clientSocket);
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, (*userName + "ÀÇ " + recvValue["roomName"].asString() + " Ã¤ÆÃ¹æ »ı¼º"));
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, (*userName + "ì˜ " + recvValue["roomName"].asString() + " ì±„íŒ…ë°© ìƒì„±"));
 }
 
 void Server::AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendValue, string* userId, SOCKET* clientSocket)
@@ -451,21 +451,21 @@ void Server::AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendVa
 			fixedRow);
 	}
 
-	if (recvValue["addUserId"].asString() == *userId)	// º»ÀÎ Ãß°¡ÇÏ±â
+	if (recvValue["addUserId"].asString() == *userId)	// ë³¸ì¸ ì¶”ê°€í•˜ê¸°
 	{
 		for (const auto& iterator : ChattingRoomManager::GetInstance()->GetChattingRoomList())
 		{
 			if (iterator->GetChattingRoomName() == recvValue["roomName"].asString())
 			{
 				iterator->ConnectChattingRoom(*clientSocket);
-				ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "À¯Àú Ãß°¡ ¼º°ø"));
+				ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "ìœ ì € ì¶”ê°€ ì„±ê³µ"));
 				return;
 			}
 		}
 		return;
 	}
 
-	// Ã¤ÆÃ¹æ¿¡ À¯Àú Ãß°¡ÇÏ±â
+	// ì±„íŒ…ë°©ì— ìœ ì € ì¶”ê°€í•˜ê¸°
 	clientSocketListMutex.lock();
 	for (const auto& iterator : clientSocketList)
 	{
@@ -477,7 +477,7 @@ void Server::AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendVa
 				{
 					roomListIterator->ConnectChattingRoom(iterator.socket);
 					sendValue["kind"] = AddChattingRoomUser;
-					ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "À¯Àú Ãß°¡ ¼º°ø"));
+					ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "ìœ ì € ì¶”ê°€ ì„±ê³µ"));
 					sendValue["roomName"] = recvValue["roomName"].asString();
 					sendValue["roomNumber"] = stoi(recvValue["roomNumber"].asString());
 					SendJsonData(sendValue, iterator.socket);
@@ -489,7 +489,7 @@ void Server::AddChattingRoomUserMethod(Json::Value recvValue, Json::Value sendVa
 	}
 
 	clientSocketListMutex.unlock();
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "À¯Àú Ãß°¡ ¼º°ø"));
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, string(recvValue["addUserId"].asString() + "ìœ ì € ì¶”ê°€ ì„±ê³µ"));
 }
 
 void Server::GetChattingRoomNameMethod(Json::Value recvValue, Json::Value sendValue, SOCKET* clientSocket)
@@ -517,7 +517,7 @@ void Server::GetFriendDataMethod(Json::Value sendValue, string* userId, SOCKET* 
 		if (loadTextIterator == friendList.begin())
 		{
 			loadTextIterator++;
-			continue;   // Ã¹ÁÙ Á¦¿Ü
+			continue;   // ì²«ì¤„ ì œì™¸
 		}
 
 		vector<string> row = MembershipDB::GetInstance()->Split(*loadTextIterator, ',');
@@ -604,12 +604,12 @@ void Server::SetFileRequestMessageMethod(Json::Value recvValue, string* userName
 	}
 
 	ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + " " +
-		recvValue["fileName"].asString() + "¼ö½Å¿Ï·á");
+		recvValue["fileName"].asString() + "ìˆ˜ì‹ ì™„ë£Œ");
 
 	sendValue["kind"] = GetFileRequest;
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
-	sendValue["message"] = *userName + "´ÔÀÌ " +
-		recvValue["fileName"].asString() + "ÆÄÀÏÀ» º¸³Â½À´Ï´Ù.";
+	sendValue["message"] = *userName + "ë‹˜ì´ " +
+		recvValue["fileName"].asString() + "íŒŒì¼ì„ ë³´ëƒˆìŠµë‹ˆë‹¤.";
 	sendValue["fileName"] = recvValue["fileName"].asString();
 	sendValue["roomNumber"] = recvValue["roomNumber"].asInt();
 
@@ -643,7 +643,7 @@ void Server::AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKE
 	if (recvValue["friendId"].asString() == *userId)
 	{
 		sendValue["result"] = false;
-		sendValue["message"] = "ÀÚ±â ÀÚ½ÅÀº Ä£±¸·Î µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.";
+		sendValue["message"] = "ìê¸° ìì‹ ì€ ì¹œêµ¬ë¡œ ë“±ë¡í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
 		SendJsonData(sendValue, *clientSocket);
 		return;
 	}
@@ -654,7 +654,7 @@ void Server::AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKE
 	if (findReturnValue < 0)
 	{
 		sendValue["result"] = false;
-		sendValue["message"] = "ÇØ´ç id´Â ¾ø´Â id ÀÔ´Ï´Ù.";
+		sendValue["message"] = "í•´ë‹¹ idëŠ” ì—†ëŠ” id ì…ë‹ˆë‹¤.";
 		SendJsonData(sendValue, *clientSocket);
 		return;
 	}
@@ -703,7 +703,7 @@ void Server::AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKE
 	if (isExistValue)
 	{
 		sendValue["result"] = false;
-		sendValue["message"] = "ÀÌ¹Ì µî·ÏµÇ¾î ÀÖ´Â Ä£±¸ÀÔ´Ï´Ù.";
+		sendValue["message"] = "ì´ë¯¸ ë“±ë¡ë˜ì–´ ìˆëŠ” ì¹œêµ¬ì…ë‹ˆë‹¤.";
 	}
 	else
 	{
@@ -717,14 +717,14 @@ void Server::AddFriendMessageMethod(Json::Value recvValue, string* userId, SOCKE
 void Server::GetFileRequestMessageMethod(Json::Value recvValue, string* userName, SOCKET* clientSocket)
 {
 	Json::Value sendValue;
-	long fileSize;	// ÆÄÀÏ ÀüÃ¼ »çÀÌÁî
+	long fileSize;	// íŒŒì¼ ì „ì²´ ì‚¬ì´ì¦ˆ
 	FILE* fp;
 
-	ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + "ÆÄÀÏÀü¼Û¿äÃ» ¼ö½Å");
-	fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// ÆÄÀÏ ¿­°í
+	ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + "íŒŒì¼ì „ì†¡ìš”ì²­ ìˆ˜ì‹ ");
+	fopen_s(&fp, ("downloadFiles\\" + recvValue["fileName"].asString()).c_str(), "rb");	// íŒŒì¼ ì—´ê³ 
 	if (fp != NULL)
-	{	// ÆÄÀÏÀ» º¸³¿
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " ÆÄÀÏÀü¼Û½ÃÀÛ");
+	{	// íŒŒì¼ì„ ë³´ëƒ„
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " íŒŒì¼ì „ì†¡ì‹œì‘");
 		fseek(fp, 0, SEEK_END);
 		fileSize = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
@@ -737,10 +737,10 @@ void Server::GetFileRequestMessageMethod(Json::Value recvValue, string* userName
 		SendJsonData(sendValue, *clientSocket);
 		SendFileDataFromServer(fp, fileSize, *clientSocket);
 		fclose(fp);
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " ÆÄÀÏÀü¼Û¼º°ø");
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " íŒŒì¼ì „ì†¡ì„±ê³µ");
 	}
 	else
-		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " ÆÄÀÏÀü¼Û½ÇÆĞ");
+		ServerUI::GetInstance()->DebugLogUpdate(logBox, *userName + recvValue["fileName"].asString() + " íŒŒì¼ì „ì†¡ì‹¤íŒ¨");
 }
 
 void Server::EmoticonMessageMethod(Json::Value recvValue, Json::Value sendValue, string* userName, SOCKET* clientSocket)

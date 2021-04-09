@@ -34,6 +34,8 @@ private:
 
 	Client();
 public:
+	HWND g_hDlg;
+
 	static Client* GetInstance();
 	static void ReleaseInstance();
 

@@ -143,6 +143,8 @@
     <ClCompile Include="ChattingRoomManager.cpp" />
     <ClCompile Include="MembershipDB.cpp" />
     <ClCompile Include="server-main.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChattingRoom.h" />
@@ -150,6 +152,10 @@
     <ClInclude Include="MembershipDB.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="server-main.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerEnumCollection.h" />
+    <ClInclude Include="ServerUI.h" />
+    <ClInclude Include="ServerUIEnumCollection.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="win-socket-chat-management-server.rc" />
