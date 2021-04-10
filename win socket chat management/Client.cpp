@@ -1,4 +1,6 @@
 ﻿#include "Client.h"
+#include <shlwapi.h> 
+#pragma comment(lib, "shlwapi")
 
 using namespace std;
 
@@ -120,13 +122,36 @@ bool Client::RecvFileData(Json::Value value)
 	int totalRecvFileCount, currentRecvFileCount = 0;
 	int fileSize;
 	int readByteSize;
+	string recvFilePath;
 
 	currentRecvFileCount = 0;
 	fileSize = value["fileSize"].asInt();
 	totalRecvFileCount = fileSize / PACKET_SIZE + 1;
 
+	recvFilePath = value["fileName"].asString();
+	int fileNumber = 0;
+
+	while (isExistFile("downloadFiles\\" + value["fileName"].asString(), fileNumber))
+	{
+		fileNumber++;
+	}
+
+	recvFilePath = "downloadFiles\\" + value["fileName"].asString();
+
+	for (int i = recvFilePath.size() - 1; i >= 0; i--)
+	{
+		if (!fileNumber)
+			break;
+
+		if (recvFilePath[i] != '.')
+			continue;
+
+		recvFilePath.insert(i, "(" + to_string(fileNumber) + ")");
+		break;
+	}
+
 	FILE* fp;
-	fopen_s(&fp, ("downloadFiles\\" + value["fileName"].asString()).c_str(), "wb");
+	fopen_s(&fp, (recvFilePath).c_str(), "wb");
 	if (fp != NULL)
 	{
 		while (currentRecvFileCount != totalRecvFileCount)
@@ -158,6 +183,24 @@ Json::Value Client::RecvPacketToServer()
 	}
 
 	return NULL;
+}
+
+bool Client::isExistFile(string filePath, int index)
+{
+	if (!index)
+		return PathFileExists(filePath.c_str());
+
+	for (int i = filePath.size()-1; i >= 0; i--)
+	{
+		if (filePath[i] == '.')
+		{
+			filePath.insert(i, "(" + to_string(index) + ")");
+			break;
+		}
+	}
+
+
+	return PathFileExists(filePath.c_str());
 }
 
 

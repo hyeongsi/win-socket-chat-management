@@ -49,4 +49,6 @@ public:
 	bool SendFileDataToServer(FILE* fp, int fileSize);
 	bool RecvFileData(Json::Value value);
 	Json::Value RecvPacketToServer();
+
+	bool isExistFile(std::string filePath, int index);
 };
