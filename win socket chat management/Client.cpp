@@ -1,5 +1,6 @@
 ﻿#include "Client.h"
 #include <shlwapi.h> 
+#include <ShlObj_core.h>
 #pragma comment(lib, "shlwapi")
 
 using namespace std;
@@ -124,6 +125,21 @@ bool Client::RecvFileData(Json::Value value)
 	int readByteSize;
 	string recvFilePath;
 
+	char cpath[MAX_PATH] = ("");
+	LPITEMIDLIST pDirList;
+	BROWSEINFO browseInfo;
+	browseInfo.hwndOwner = NULL;
+	browseInfo.pidlRoot = NULL;
+	browseInfo.lpszTitle = ("폴더를 선택해 주세요");
+	browseInfo.pszDisplayName = cpath;
+	browseInfo.ulFlags = BIF_RETURNONLYFSDIRS;
+	browseInfo.lpfn = NULL;
+	browseInfo.lParam = 0;
+	pDirList = SHBrowseForFolder(&browseInfo);
+	if (pDirList == NULL) return false;
+	SHGetPathFromIDList(pDirList, cpath);
+	char* return_path = cpath;
+
 	currentRecvFileCount = 0;
 	fileSize = value["fileSize"].asInt();
 	totalRecvFileCount = fileSize / PACKET_SIZE + 1;
@@ -131,12 +147,12 @@ bool Client::RecvFileData(Json::Value value)
 	recvFilePath = value["fileName"].asString();
 	int fileNumber = 0;
 
-	while (isExistFile("downloadFiles\\" + value["fileName"].asString(), fileNumber))
+	while (isExistFile(string(return_path) + "\\" + value["fileName"].asString(), fileNumber))
 	{
 		fileNumber++;
 	}
 
-	recvFilePath = "downloadFiles\\" + value["fileName"].asString();
+	recvFilePath = string(return_path) + "\\" + value["fileName"].asString();
 
 	for (int i = recvFilePath.size() - 1; i >= 0; i--)
 	{

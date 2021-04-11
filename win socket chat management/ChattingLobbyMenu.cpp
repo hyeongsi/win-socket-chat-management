@@ -313,7 +313,7 @@ unsigned __stdcall ChattingLobbyMenu::RecvMessageThread(void* arg)
 			break;
 		case SetFileRequest:
 			if (Client::GetInstance()->RecvFileData(recvJson))
-				MessageBox(GetInstance()->hChatLobbyDlg, "파일 저장 완료", ("downloadFiles\\" + recvJson["fileName"].asString()).c_str(), 0);
+				MessageBox(GetInstance()->hChatLobbyDlg, "파일 저장 완료","저장 완료", 0);
 			break;
 		case AddFriend:
 			AddFriendMessage(recvJson);
