@@ -1,9 +1,6 @@
-﻿  Client.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(36,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(81,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(81,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(82,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(194,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(194,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Client.cpp(196,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
+﻿  LINK : C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.pdb 프로그램 데이터베이스가 없습니다. 전체 링크를 수행하고 있습니다.
+LINK : warning LNK4098: 'MSVCRT' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
+lib_json.lib(json_reader.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_reader.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_value.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_value.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_writer.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_writer.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
   win socket chat management.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win socket chat management.exe

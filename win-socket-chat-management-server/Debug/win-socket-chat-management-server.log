@@ -1,21 +1,28 @@
-﻿  server-main.cpp
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.h(82,24): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(97,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(97,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(99,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(276,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(519,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(527,22): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(511,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(648,9): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(702,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(694,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(777,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(781,11): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(872,15): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(874,9): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(908,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(908,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(909,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
-C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\server-main.cpp(957,2): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  ChattingRoom.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ChattingRoom.cpp(45,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ChattingRoom.cpp(45,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ChattingRoom.cpp(46,21): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+  ChattingRoomManager.cpp
+  MembershipDB.cpp
+  server-main.cpp
+  Server.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(33,8): warning C4996: 'Json::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(33,21): warning C4996: 'Json::StyledWriter::StyledWriter': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(34,14): warning C4996: 'Json::StyledWriter::write': Use StreamWriterBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(193,9): warning C4996: 'Json::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(193,16): warning C4996: 'Json::Reader::Reader': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(195,9): warning C4996: 'Json::Reader::parse': Use CharReader and CharReaderBuilder instead
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(431,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\Server.cpp(669,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  ServerUI.cpp
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ServerUI.h(18,25): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ServerUI.cpp(31,21): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ServerUI.cpp(33,18): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ServerUI.cpp(49,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win-socket-chat-management-server\ServerUI.cpp(197,20): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  코드를 생성하고 있습니다...
+MSVCRTD.lib(initializers.obj) : warning LNK4098: 'msvcrt.lib' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
+lib_json.lib(json_reader.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_reader.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_value.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_value.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_writer.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_writer.obj)' 또는 'C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
   win-socket-chat-management-server.vcxproj -> C:\Users\parks\Desktop\GitHub\win-socket-chat-management\win socket chat management\Debug\win-socket-chat-management-server.exe

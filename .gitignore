@@ -26,6 +26,9 @@
 *.a
 *.lib
 
+!win socket chat management/jsoncppkor/*.lib
+!win-socket-chat-management-server/jsoncppkor/*.lib
+
 # Executables
 *.exe
 *.out

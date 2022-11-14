@@ -3,7 +3,7 @@
 #include <string>
 
 #include "jsoncppkor\include\json\json.h"
-#pragma comment(lib,"jsoncppkor\\json_vc71_libmtd.lib")
+#pragma comment(lib,"jsoncppkor\\lib_json.lib")
 
 enum MessageKind
 {
