@@ -11,12 +11,9 @@
 </div>
 
 ### 개요
-```
 소켓 프로그래밍 활용 및 스레드 연습
-```
 
 ## 기술 스택
-```
 * C++
 
 * Win api
@@ -24,9 +21,7 @@
 * WinSock2
 
 * Visual Studio
-```
 
-Visual Studio
 <br/>
 
 ## 시연 영상
