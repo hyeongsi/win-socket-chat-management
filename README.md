@@ -1,4 +1,4 @@
-# socket chat
+# 소켓 채팅 프로그램
 <br>
 
 ## 프로젝트 소개
@@ -19,38 +19,38 @@
 ```
 * C++
 
+* Win api
+
+* WinSock2
+
 * Visual Studio
 ```
 
-<br>
+Visual Studio
+<br/>
 
 ## 시연 영상
 <details>
   <summary><h5>시연 동영상</h5></summary>
   <video src="https://user-images.githubusercontent.com/71202869/246646453-3f47a083-170e-47b0-b0ca-a97b3ac10c17.mp4"></video>
 </details>
-<br>
+<br/>
 
-## 기타 / 조작법
+## 아쉬운점
+데이터를 Json 형식으로 만들어 정해진 규칙에 맞게 데이터를 넣어 전송했으나<br/>
+개발 당시엔 wstring과 같은 유니코드를 지원하는 자료형을 몰랐기에<br/>
+한글을 전송할 때 인코딩 문제로 글자가 깨지고 난리가 나서 이 문제를 해결하느라 애를 먹었다.
+
+문제가 생겼을 때 해결할 수 있는 방법을 넓은 시각에서 봤어야 했으나<br/>
+그러지 못해 생긴 문제로 다음번엔 이러한 문제가 생기지 않도록 주의하려 한다.
+
+## 기타
+<img width="400" src="https://user-images.githubusercontent.com/71202869/246646420-d6de104b-27aa-42a3-9fc1-60b54797bbac.PNG"/>
+<img width="400" src="https://user-images.githubusercontent.com/71202869/246646422-2015aa56-6755-4df6-9094-daf6e1a7d479.PNG"/>
+  
 <ul>
  <li>
   이 프로젝트에서 사용하는 데이터들은 DB를 사용하지 않고
   .csv 파일로 데이터를 저장하고 불러와서 사용함
  </li>
- <li>
-  <img width="400" src="https://user-images.githubusercontent.com/71202869/246646420-d6de104b-27aa-42a3-9fc1-60b54797bbac.PNG"/>
-  <img width="400" src="https://user-images.githubusercontent.com/71202869/246646422-2015aa56-6755-4df6-9094-daf6e1a7d479.PNG"/>
- </li>
-</ui>
-  
-<br/>
-
-## 아쉬운점
-```
-* 데이터를 Json 형식으로 만들어 정해진 규칙에 맞게 데이터를 넣어 전송했으나
-개발 당시엔 wstring과 같은 유니코드를 지원하는 자료형을 몰랐기에
-한글을 전송할 때 인코딩 문제로 글자가 깨지고 난리가 나서 이 문제를 해결하느라 애를 먹었다.
-
-문제가 생겼을 때 해결할 수 있는 방법을 넓은 시각에서 봤어야 했으나
-그러지 못해 생긴 문제로 다음번엔 이러한 문제가 생기지 않도록 주의하려 한다.
-```
+</ul>
