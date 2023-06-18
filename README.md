@@ -39,6 +39,8 @@
 문제가 생겼을 때 해결할 수 있는 방법을 넓은 시각에서 봤어야 했으나<br/>
 그러지 못해 생긴 문제로 다음번엔 이러한 문제가 생기지 않도록 주의하려 한다.
 
+<br/>
+
 ## 기타
 <img width="400" src="https://user-images.githubusercontent.com/71202869/246646420-d6de104b-27aa-42a3-9fc1-60b54797bbac.PNG"/>
 <img width="400" src="https://user-images.githubusercontent.com/71202869/246646422-2015aa56-6755-4df6-9094-daf6e1a7d479.PNG"/>
